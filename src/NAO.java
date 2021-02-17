@@ -34,7 +34,7 @@ public class NAO {
     public void luisteren()throws Exception{
         ALSpeechRecognition spraakherk = new ALSpeechRecognition(this.application.session());
 
-        
+
     }
 
 
