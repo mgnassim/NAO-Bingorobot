@@ -1,3 +1,5 @@
+package Joris;
+
 import com.aldebaran.qi.Application;
 import com.aldebaran.qi.helper.proxies.ALSpeechRecognition;
 import com.aldebaran.qi.helper.proxies.ALTextToSpeech;
