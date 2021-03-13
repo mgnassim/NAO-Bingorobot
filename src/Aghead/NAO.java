@@ -1,5 +1,8 @@
 package Aghead;
 import com.aldebaran.qi.Application;
+import com.aldebaran.qi.CallError;
+import com.aldebaran.qi.helper.EventCallback;
+import com.aldebaran.qi.helper.proxies.ALMemory;
 import com.aldebaran.qi.helper.proxies.ALRobotPosture;
 import com.aldebaran.qi.helper.proxies.ALSpeechRecognition;
 import com.aldebaran.qi.helper.proxies.ALTextToSpeech;
@@ -27,18 +30,25 @@ public class NAO {
         tts.say(tekst);
     }
 
-    public void speechRecognition() throws Exception {
+    public void speechRecognition(List<String> stringsList) throws Exception {
         // Create an ALTextToSpeech object and link it to your current session
         ALSpeechRecognition robotRecognition = new ALSpeechRecognition(this.application.session());
-        // A List of string's
-        List<String> stringsList = new ArrayList<>();
-        stringsList.add("Het zijn jaartallen van vòòr Christus");
-        stringsList.add("Een koper");
-        stringsList.add("Een van de vaders is ook een opa. Daardoor is de andere vader zowel een zoon als een vader");
-        stringsList.add("Een om ruzie te maken en een om het weer goed te maken");
+        ALMemory geheugen = new ALMemory(this.application.session());
+        robotRecognition.setLanguage("Dutch");
         // Make your robot recognize words
         robotRecognition.setVocabulary(stringsList, false);
 
+        geheugen.subscribeToEvent("WordRecognized", new EventCallback() {
+            @Override
+            public void onEvent(Object o) throws InterruptedException, CallError {
+                ArrayList<String> data = (ArrayList<String>) o;
+                System.out.println(data.get(0));
+            }
+        });
+
+        robotRecognition.subscribe("Test_ASR");
+        Thread.sleep(5000);
+        robotRecognition.unsubscribe("Test_ASR");
     }
 
     public void tell() throws Exception {
@@ -54,7 +64,14 @@ public class NAO {
             String raadsel = raadsels[i];
             tts.say(raadsel);
             Thread.sleep(15000);
-            speechRecognition();
+            // A List of string's
+            List<String> stringsList = new ArrayList<>();
+            stringsList.add("Het zijn jaartallen van vòòr Christus");
+            stringsList.add("Een koper");
+            stringsList.add("Een van de vaders is ook een opa. Daardoor is de andere vader zowel een zoon als een vader");
+            stringsList.add("Een om ruzie te maken en een om het weer goed te maken");
+            speechRecognition(stringsList);
+
         }
     }
 

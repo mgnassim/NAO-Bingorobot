@@ -1,5 +1,8 @@
 package Aghead;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Main {
 
     public static void main(String[] args) throws Exception {
@@ -8,7 +11,6 @@ public class Main {
         nao.say("Hallo mijn vrienden \\pau=1000\\ hoe gaat het?");
         Thread.sleep(5000);
         nao.tell();
-
     }
 
 }
