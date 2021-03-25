@@ -10,8 +10,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 
     public class Bingo {
 
-
-        public  void createPDF(){
+        public void createPDF(){
             try {
                 Document document = new Document(new Rectangle(360, 852)); // Create Document instance
                 PdfWriter.getInstance(document, new FileOutputStream("FirstFile.pdf")); // Give the instance a name
