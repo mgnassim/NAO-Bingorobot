@@ -69,44 +69,6 @@ public class NAO {
 
     }
 
-    public boolean test(){
-        return true;
-    }
-    public void sayRandomRiddles() throws Exception {
-        ALTextToSpeech tts = new ALTextToSpeech(this.application.session());
-        ALSpeechRecognition speechRecognition = new ALSpeechRecognition(this.application.session());
-        speechRecognition.setLanguage("English");
-        ArrayList<String> help = new ArrayList<>();
-        help.add("help");
-        help.add("hint");
-
-        HashMap<String, String> riddlesAndAnswer = new HashMap<>();
-        riddlesAndAnswer.put("Hoe noem je een metalen klant?", "Een koper");
-        riddlesAndAnswer.put("Een man werd dodelijk gewond tijdens een veldslag in 892. Hij overleed en werd begraven in 891. Rara, hoe kan dat?", "Het zijn jaartallen van vòòr Christus");
-        riddlesAndAnswer.put("2 vaders en 2 zoons aten tijdens een ontbijt samen 3 eieren, iedereen had één ei. Hoe kan dit?", "Een van de vaders is ook een opa. Daardoor is de andere vader zowel een zoon als een vader");
-        riddlesAndAnswer.put("Waarom heeft een vrouw twee paar lippen?", "Een om ruzie te maken en een om het weer goed te maken");
-        int index = 0; // om te weten welke raadsel je bent.
-
-        ArrayList<String> hints = new ArrayList<>();
-        hints.add("Jaartallen");
-        hints.add("Het is een van de meest beroemdste metalen.");
-        hints.add("Eentje is heel oud!");
-        hints.add("Ze hebben andere functies.");
-
-        Iterator<Map.Entry<String, String>> iterator = riddlesAndAnswer.entrySet().iterator();
-        while (iterator.hasNext()) {
-
-            Map.Entry<String, String> entry = iterator.next();
-            tts.say(entry.getKey());
-            index++; // om te weten welke raadsel koppelen aan goede hint.
-            Thread.sleep(2000);
-            if(test()) {
-                tts.say(hints.get(index));
-            }
-
-        }
-
-    }
 
     public void scan()throws Exception{
         ALBarcodeReader scanner = new ALBarcodeReader(this.application.session());
