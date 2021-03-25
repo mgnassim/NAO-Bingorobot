@@ -33,32 +33,55 @@ public class NAO {
         tts.say(tekst);
     }
 
-    public void listen(List<String> woordenlijst)throws Exception{
+    public void listen(List<String> trueAnswers, List<String> falseAnswers)throws Exception{
+        for (int i  = 0; i< falseAnswers.size(); i++){
+            trueAnswers.add(falseAnswers.get(0));
+        }
         ALSpeechRecognition spraakherk = new ALSpeechRecognition(this.application.session());
         ALMemory geheugen = new ALMemory(this.application.session());
         spraakherk.setLanguage("Dutch");
-        spraakherk.setVocabulary(woordenlijst,false);
-
+        spraakherk.setVocabulary(trueAnswers,false);
 
         geheugen.subscribeToEvent("WordRecognized", new EventCallback() {
             @Override
             public void onEvent(Object o) throws InterruptedException, CallError {
                 ArrayList<String> data = (ArrayList<String>) o;
                 System.out.println(data.get(0));
+                Listenstate state = Listenstate.standard;
+                boolean isTrue = false;
+                while (!isTrue) {
 
-                if(data.get(0).contains("februari") || data.get(0).contains("december")){
-                    try {
-                        say("nee, dat is niet het antwoord waar ik naar zoek");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }else if(data.get(0).contains("12") || data.get(0).contains("allemaal")){
-                    try{
-                        say("correct");
-                    }catch (Exception e){
-                        e.printStackTrace();
+
+                    for (int i = 0; i < trueAnswers.size(); i++) {
+                        if (data.get(0).contains(trueAnswers.get(i))) {
+                            state = Listenstate.rightanswer;
+                        } else if (data.get(0).contains(falseAnswers.get(i))) {
+                            state = Listenstate.wronganswer;
+                        } else
+                            state = Listenstate.standard;
                     }
 
+                    if (state == Listenstate.wronganswer) {
+                        try {
+                            say("dat is helaas fout probeer het nog eens");
+                            isTrue = true;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else if (state == Listenstate.rightanswer) {
+                        try {
+                            say("correct");
+                            isTrue = true;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        try {
+                            say("Ik heb u helaas niet verstaan");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
         });
@@ -88,8 +111,6 @@ public class NAO {
             Thread.sleep(5000);
             scanner.unsubscribe("QR-Code");
             say("dank u wel");
-            System.out.println();
-
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -97,4 +118,10 @@ public class NAO {
 
 
 
+}
+
+enum Listenstate{
+    rightanswer,
+    wronganswer,
+    standard
 }
