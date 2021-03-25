@@ -9,7 +9,9 @@ import com.itextpdf.text.pdf.PdfWriter;
 /*This class is to create a Pdf file for our Bingo card*/
 
     public class Bingo {
-        public static void main(String[] args) {
+
+
+        public  void createPDF(){
             try {
                 Document document = new Document(new Rectangle(360, 852)); // Create Document instance
                 PdfWriter.getInstance(document, new FileOutputStream("FirstFile.pdf")); // Give the instance a name
