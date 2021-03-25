@@ -5,16 +5,23 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         NAO nao = new NAO();
-        nao.verbind("localhost", 9559);
+        nao.connect("Padrick.robot.hva-robots.nl", 9559);
 
-        List <String> woordenlijst = new ArrayList<>();
-        woordenlijst.add("Paard");
-        woordenlijst.add("Koe");
-        woordenlijst.add("melk");
-        woordenlijst.add("pizza");
-        woordenlijst.add("vogel");
+        List <String> wordlist = new ArrayList<>();
+        wordlist.add("12");
+        wordlist.add("allemaal");
+        wordlist.add("februari");
+        wordlist.add("december");
 
-        nao.luisteren(woordenlijst);
+        nao.say("hoeveel maanden hebben 28 dagen?");
+
+        nao.listen(wordlist);
+
+        Thread.sleep(5000);
+
+        nao.scan();
+
+
 
     }
 }
