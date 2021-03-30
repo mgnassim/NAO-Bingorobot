@@ -37,12 +37,12 @@ public class NAO {
         for (int i  = 0; i< falseAnswers.size(); i++){
             trueAnswers.add(falseAnswers.get(0));
         }
-        ALSpeechRecognition spraakherk = new ALSpeechRecognition(this.application.session());
-        ALMemory geheugen = new ALMemory(this.application.session());
-        spraakherk.setLanguage("Dutch");
-        spraakherk.setVocabulary(trueAnswers,false);
+        ALSpeechRecognition speechrec = new ALSpeechRecognition(this.application.session());
+        ALMemory memory = new ALMemory(this.application.session());
+        speechrec.setLanguage("Dutch");
+        speechrec.setVocabulary(trueAnswers,false);
 
-        geheugen.subscribeToEvent("WordRecognized", new EventCallback() {
+        memory.subscribeToEvent("WordRecognized", new EventCallback() {
             @Override
             public void onEvent(Object o) throws InterruptedException, CallError {
                 ArrayList<String> data = (ArrayList<String>) o;
@@ -86,9 +86,9 @@ public class NAO {
             }
         });
 
-        spraakherk.subscribe("Test_asr");
+        speechrec.subscribe("Test_asr");
         Thread.sleep(2000);
-        spraakherk.unsubscribe("Test_asr");
+        speechrec.unsubscribe("Test_asr");
 
     }
 
