@@ -9,8 +9,8 @@ public class NAO {
     private String naam;
     private Application application;
 
-    public void connect(String hostname, int port){
-        String robotUrl = "tcp://" + hostname+ ":" + port;
+    public void connect(String hostname, int port) {
+        String robotUrl = "tcp://" + hostname + ":" + port;
         // Create a new application
         this.application = new Application(new String[]{}, robotUrl);
         // Start your application
@@ -26,6 +26,7 @@ public class NAO {
         ALRobotPosture posture = new ALRobotPosture(this.application.session());
         posture.goToPosture("Sit", 0.75f);
     }
+
     public void say(String tekst) throws Exception {
         // Create an ALTextToSpeech object and link it to your current session
         ALTextToSpeech tts = new ALTextToSpeech(this.application.session());
@@ -33,57 +34,64 @@ public class NAO {
         tts.say(tekst);
     }
 
-    public void listen(List<String> trueAnswers, List<String> falseAnswers)throws Exception{
-        for (int i  = 0; i< falseAnswers.size(); i++){
-            trueAnswers.add(falseAnswers.get(0));
-        }
+    public void listen(List<String> trueAnswers, List<String> falseAnswers) throws Exception {
+        List<String> words = new ArrayList<>();
+        words.addAll(falseAnswers);
+        words.addAll(trueAnswers);
         ALSpeechRecognition speechrec = new ALSpeechRecognition(this.application.session());
         ALMemory memory = new ALMemory(this.application.session());
-        speechrec.setLanguage("Dutch");
-        speechrec.setVocabulary(trueAnswers,false);
+        speechrec.setLanguage("English");
+        speechrec.setVocabulary(words, false);
 
         memory.subscribeToEvent("WordRecognized", new EventCallback() {
             @Override
             public void onEvent(Object o) throws InterruptedException, CallError {
-                ArrayList<String> data = (ArrayList<String>) o;
-                System.out.println(data.get(0));
+                List<Object> data = (List<Object>) o;
+                String value = (String) data.get(0);
+                float confidence = (float) data.get(1);
+
                 Listenstate state = Listenstate.standard;
-                boolean isTrue = false;
-                while (!isTrue) {
+
+                if (!value.equals("")) {
+
+                    System.out.println(confidence);
+                    System.out.println(value);
+                    if (confidence > 0.35f) {
 
 
-                    for (int i = 0; i < trueAnswers.size(); i++) {
-                        if (data.get(0).contains(trueAnswers.get(i))) {
-                            state = Listenstate.rightanswer;
-                        } else if (data.get(0).contains(falseAnswers.get(i))) {
-                            state = Listenstate.wronganswer;
-                        } else
-                            state = Listenstate.standard;
-                    }
+                        if (falseAnswers.contains(value)) {
+                            try {
+                                say("dat is helaas fout probeer het nog eens");
 
-                    if (state == Listenstate.wronganswer) {
-                        try {
-                            say("dat is helaas fout probeer het nog eens");
-                            isTrue = true;
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        } else if (trueAnswers.contains(value)) {
+                            try {
+                                say("correct");
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            try {
+                                say("ik ben boos");
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
-                    } else if (state == Listenstate.rightanswer) {
-                        try {
-                            say("correct");
-                            isTrue = true;
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+
                     } else {
                         try {
-                            say("Ik heb u helaas niet verstaan");
+                            say("i don't know, fuck you");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
                 }
+
             }
+
         });
 
         speechrec.subscribe("Test_asr");
@@ -93,7 +101,7 @@ public class NAO {
     }
 
 
-    public void scan()throws Exception{
+    public void scan() throws Exception {
         ALBarcodeReader scanner = new ALBarcodeReader(this.application.session());
         ALMemory memory = new ALMemory(this.application.session());
         try {
@@ -103,6 +111,7 @@ public class NAO {
                 @Override
                 public void onEvent(Object o) throws InterruptedException, CallError {
                     ArrayList<String> data = (ArrayList<String>) o;
+
                     System.out.println(data.get(0));
 
                 }
@@ -111,16 +120,15 @@ public class NAO {
             Thread.sleep(5000);
             scanner.unsubscribe("QR-Code");
             say("dank u wel");
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
 
-
 }
 
-enum Listenstate{
+enum Listenstate {
     rightanswer,
     wronganswer,
     standard

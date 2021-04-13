@@ -5,17 +5,27 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         NAO nao = new NAO();
-        nao.connect("Padrick.robot.hva-robots.nl", 9559);
+        nao.connect("Padme.local", 9559);
+        
+        nao.say("Hello my friend");
+        
+        ArrayList<String> rightasnwers = new ArrayList<>();
+        rightasnwers.add("all");
+        rightasnwers.add("everyone");
+        ArrayList<String> falseanswers = new ArrayList<>();
+        falseanswers.add("February");
+        falseanswers.add("march");
+        falseanswers.add("december");
+        nao.say("hello how are you?");
 
-
-
-        nao.say("hoeveel maanden hebben 28 dagen?");
+        nao.listen(rightasnwers,falseanswers);
 
 
 
         Thread.sleep(5000);
 
-        nao.scan();
+       // nao.scan();
+        
 
 
 
