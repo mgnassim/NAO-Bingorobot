@@ -50,8 +50,6 @@ public class NAO {
                 String value = (String) data.get(0);
                 float confidence = (float) data.get(1);
 
-                Listenstate state = Listenstate.standard;
-
                 if (!value.equals("")) {
 
                     System.out.println(confidence);
@@ -126,10 +124,4 @@ public class NAO {
     }
 
 
-}
-
-enum Listenstate {
-    rightanswer,
-    wronganswer,
-    standard
 }
