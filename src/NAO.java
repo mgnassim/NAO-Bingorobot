@@ -34,13 +34,12 @@ public class NAO {
     }
 
     public void listen(List<String> woordenlijst)throws Exception{
-        ALSpeechRecognition spraakherk = new ALSpeechRecognition(this.application.session());
-        ALMemory geheugen = new ALMemory(this.application.session());
-        spraakherk.setLanguage("Dutch");
-        spraakherk.setVocabulary(woordenlijst,false);
+        ALSpeechRecognition speakreg = new ALSpeechRecognition(this.application.session());
+        ALMemory memory = new ALMemory(this.application.session());
+        speakreg.setLanguage("Dutch");
+        speakreg.setVocabulary(woordenlijst,false);
 
-
-        geheugen.subscribeToEvent("WordRecognized", new EventCallback() {
+        memory.subscribeToEvent("WordRecognized", new EventCallback() {
             @Override
             public void onEvent(Object o) throws InterruptedException, CallError {
                 ArrayList<String> data = (ArrayList<String>) o;
@@ -62,19 +61,15 @@ public class NAO {
                 }
             }
         });
-
-        spraakherk.subscribe("Test_asr");
+        speakreg.subscribe("Test_asr");
         Thread.sleep(2000);
-        spraakherk.unsubscribe("Test_asr");
-
+        speakreg.unsubscribe("Test_asr");
     }
-
 
     public void scan()throws Exception{
         ALBarcodeReader scanner = new ALBarcodeReader(this.application.session());
         ALMemory memory = new ALMemory(this.application.session());
         try {
-
             say("geef me een barcode");
             memory.subscribeToEvent("BarcodeReader/BarcodeDetected", new EventCallback() {
                 @Override
@@ -94,7 +89,4 @@ public class NAO {
             e.printStackTrace();
         }
     }
-
-
-
 }
