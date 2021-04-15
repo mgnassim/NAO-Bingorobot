@@ -104,7 +104,7 @@ public class NAO {
         ALMemory memory = new ALMemory(this.application.session());
         try {
 
-            say("geef me een barcode");
+            say("Laat maar zien");
             memory.subscribeToEvent("BarcodeReader/BarcodeDetected", new EventCallback() {
                 @Override
                 public void onEvent(Object o) throws InterruptedException, CallError {
