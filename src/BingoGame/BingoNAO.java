@@ -7,33 +7,29 @@ import com.aldebaran.qi.helper.proxies.*;
 
 import java.util.*;
 
-    public class BingoNAO {
-    private String naam;
+public class BingoNAO {
     private Application application;
+    protected List<String> gezegdeCijfers = new ArrayList<>();
+    protected Bingokaart bka = new Bingokaart();
 
-    public void connect(String hostname, int port){
-        String robotUrl = "tcp://" + hostname+ ":" + port;
-        // Create a new application
+    public void connect(String hostname, int port) {
+        String robotUrl = "tcp://" + hostname + ":" + port;
         this.application = new Application(new String[]{}, robotUrl);
-        // Start your application
         application.start();
     }
 
     public void say(String tekst) throws Exception {
-        // Create an ALTextToSpeech object and link it to your current session
         ALTextToSpeech tts = new ALTextToSpeech(this.application.session());
-        // Make your robot say something
+        tts.setParameter("speed", 75f);
         tts.say(tekst);
     }
 
-    public void listen(List<String> trueAnswers, List<String> falseAnswers)throws Exception{
-        for (int i  = 0; i< falseAnswers.size(); i++){
-            trueAnswers.add(falseAnswers.get(0));
-        }
+    public void listen(List<String> keyword) throws Exception {
+
         ALSpeechRecognition speechrec = new ALSpeechRecognition(this.application.session());
         ALMemory memory = new ALMemory(this.application.session());
         speechrec.setLanguage("Dutch");
-        speechrec.setVocabulary(trueAnswers,false);
+        speechrec.setVocabulary(keyword, false);
 
         memory.subscribeToEvent("WordRecognized", new EventCallback() {
             @Override
@@ -44,26 +40,19 @@ import java.util.*;
                 boolean isTrue = false;
                 while (!isTrue) {
 
-
-                    for (int i = 0; i < trueAnswers.size(); i++) {
-                        if (data.get(0).contains(trueAnswers.get(i))) {
-                            state = Listenstate.rightanswer;
-                        } else if (data.get(0).contains(falseAnswers.get(i))) {
-                            state = Listenstate.wronganswer;
+                    for (String s : keyword) {
+                        if (data.get(0).contains(s)) {
+                            state = Listenstate.keyword;
                         } else
                             state = Listenstate.standard;
                     }
 
-                    if (state == Listenstate.wronganswer) {
+                    if (state == Listenstate.keyword) {
                         try {
-                            say("dat is helaas fout probeer het nog eens");
-                            isTrue = true;
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    } else if (state == Listenstate.rightanswer) {
-                        try {
-                            say("correct");
+                            say("Scan de QR code van je bingokaart om te zien of je echt gewonnen hebt.");
+
+                            scan();
+
                             isTrue = true;
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -78,36 +67,48 @@ import java.util.*;
                 }
             }
         });
-
         speechrec.subscribe("Test_asr");
         Thread.sleep(2000);
         speechrec.unsubscribe("Test_asr");
 
     }
 
-    public void test() throws Exception {
+    public void sayNummers() throws Exception {
 
-        ALMemory alMemory = new ALMemory(this.application.session());
-        ALSpeechRecognition alSpeechRecognition = new ALSpeechRecognition(this.application.session());
-        ArrayList<String> help = new ArrayList<>();
-        help.add("help");
-        alSpeechRecognition.setVocabulary(help, false);
-        alSpeechRecognition.setLanguage("Dutch");
-        alMemory.subscribeToEvent("WordRecognized", new EventCallback() {
-            @Override
-            public void onEvent(Object o) throws InterruptedException, CallError {
-                String x = (String) o;
-                System.out.println(x);
-                if(x.equals("help")) {
-                    System.out.println("aaaaa");
-                }
+        int a = 0;
+        while (true) {
+
+            int randomNummer = (int) (Math.random() * 75) + 1;
+
+            if (this.gezegdeCijfers.contains(String.valueOf(randomNummer))) {
+                while (!this.gezegdeCijfers.contains(String.valueOf(randomNummer)))
+                    randomNummer = (int) (Math.random() * 75) + 1;
             }
-        });
 
+            this.gezegdeCijfers.add(String.valueOf(randomNummer));
+
+            try {
+                say("Nummer " + String.valueOf(randomNummer));
+                Thread.sleep(1000);
+                say("Ik herhaal het laatst genoemde nummer was" + randomNummer);
+                Thread.sleep(1500);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            System.out.println(this.gezegdeCijfers);
+
+            a++;
+            if (a == 4)
+                return; // voor test 4x
+
+        }
 
     }
 
-    public void scan()throws Exception{
+
+    public void scan() throws Exception {
         ALBarcodeReader scanner = new ALBarcodeReader(this.application.session());
         ALMemory memory = new ALMemory(this.application.session());
         try {
@@ -119,23 +120,43 @@ import java.util.*;
                     ArrayList<String> data = (ArrayList<String>) o;
                     System.out.println(data.get(0));
 
+                    String[] robotCijfers = new String[gezegdeCijfers.size()];
+                    gezegdeCijfers.toArray(robotCijfers);
+
+                    String[] spelerCijferz = bka.getSpelerCijfersz();
+
+                    if (bka.checkPlayersCard(robotCijfers, spelerCijferz)) {
+                        try {
+                            say("We hebben een winnaar! De bingo is nu klaar.");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        System.exit(0);
+                    } else {
+                        try {
+                            say("Wie wil jij nou bedriegen hier! Het spelletje wordt nu weer voortgezet.");
+                            Thread.sleep(2000);
+                            sayNummers();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
                 }
             });
             scanner.subscribe("QR-Code");
             Thread.sleep(5000);
             scanner.unsubscribe("QR-Code");
             say("dank u wel");
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
-
-
 
 }
 
-enum Listenstate{
-    rightanswer,
-    wronganswer,
-    standard
+enum Listenstate {
+    standard,
+    keyword
 }

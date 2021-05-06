@@ -10,9 +10,6 @@ import java.util.List;
 public class RiddleNAO {
 
     private Application application;
-    final String[] bingoLetters = {"B", "I", "N", "G", "O"};
-    ArrayList<String> checkArrayOfGoed = new ArrayList<>();
-    List<String> keywords = new ArrayList<>();
 
     public void connect(String hostname, int port) {
         String robotUrl = "tcp://" + hostname + ":" + port;
@@ -29,55 +26,68 @@ public class RiddleNAO {
         tts.say(tekst);
     }
 
-    public void sayNummers() throws Exception {
-        ALTextToSpeech tts = new ALTextToSpeech(this.application.session());
-
-        keywords.add("BingoGame");
-
-        for (int i = 0; i < 100; i++) {
-
-            int randomLetter = (int) (Math.random() * 5);
-            int randomNummer = (int) (Math.random() * 75) + 1;
-
-            checkArrayOfGoed.add(bingoLetters[randomLetter] + " " + randomNummer);
-            tts.say(bingoLetters[randomLetter] + " " + randomNummer);
-
-            Thread.sleep(2000);
-
+    public void listen(List<String> trueAnswers, List<String> falseAnswers) throws Exception {
+        for (int i = 0; i < falseAnswers.size(); i++) {
+            trueAnswers.add(falseAnswers.get(0));
         }
-
-    }
-
-    public void listenToKeyword() throws Exception {
-
-        keywords.add("BingoGame");
         ALSpeechRecognition speechrec = new ALSpeechRecognition(this.application.session());
         ALMemory memory = new ALMemory(this.application.session());
         speechrec.setLanguage("Dutch");
-        speechrec.setVocabulary(keywords, false);
+        speechrec.setVocabulary(trueAnswers, false);
 
         memory.subscribeToEvent("WordRecognized", new EventCallback() {
             @Override
             public void onEvent(Object o) throws InterruptedException, CallError {
-                List<Object> data = (List<Object>) o;
-                String value = (String) data.get(0);
-                float confidence = (float) data.get(1);
+                ArrayList<String> data = (ArrayList<String>) o;
+                System.out.println(data.get(0));
+                Listenstate state = Listenstate.standard;
+                boolean isTrue = false;
+                while (!isTrue) {
 
-                if(!value.equals("")) {
 
-                    if(value.contains(keywords.get(0))) {
+                    for (int i = 0; i < trueAnswers.size(); i++) {
+                        if (data.get(0).contains(trueAnswers.get(i))) {
+                            state = Listenstate.rightanswer;
+                        } else if (data.get(0).contains(falseAnswers.get(i))) {
+                            state = Listenstate.wronganswer;
+                        } else
+                            state = Listenstate.standard;
+                    }
+
+                    if (state == Listenstate.wronganswer) {
                         try {
-                            say("Scan je QR code om te zien of je gewonnen hebt!");
+                            say("dat is helaas fout probeer het nog eens");
+                            isTrue = true;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else if (state == Listenstate.rightanswer) {
+                        try {
+                            say("correct");
+                            isTrue = true;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        try {
+                            say("Ik heb u helaas niet verstaan");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
-
                 }
-
             }
         });
+        speechrec.subscribe("Test_asr");
+        Thread.sleep(2000);
+        speechrec.unsubscribe("Test_asr");
 
+    }
+
+    enum Listenstate {
+        rightanswer,
+        wronganswer,
+        standard,
     }
 
 }
