@@ -4,6 +4,7 @@ import com.aldebaran.qi.Application;
 import com.aldebaran.qi.CallError;
 import com.aldebaran.qi.helper.EventCallback;
 import com.aldebaran.qi.helper.proxies.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,68 +27,68 @@ public class RiddleNAO {
         tts.say(tekst);
     }
 
-    public void listen(List<String> trueAnswers, List<String> falseAnswers) throws Exception {
-        for (int i = 0; i < falseAnswers.size(); i++) {
-            trueAnswers.add(falseAnswers.get(0));
-        }
+    public void listenRiddle(List<String> trueAnswers, List<String> falseAnswers) throws Exception {
+        List<String> words = new ArrayList<>();
+        words.addAll(falseAnswers);
+        words.addAll(trueAnswers);
         ALSpeechRecognition speechrec = new ALSpeechRecognition(this.application.session());
         ALMemory memory = new ALMemory(this.application.session());
-        speechrec.setLanguage("Dutch");
-        speechrec.setVocabulary(trueAnswers, false);
+        speechrec.setLanguage("English");
+        speechrec.setVocabulary(words, false);
+
 
         memory.subscribeToEvent("WordRecognized", new EventCallback() {
             @Override
             public void onEvent(Object o) throws InterruptedException, CallError {
-                ArrayList<String> data = (ArrayList<String>) o;
-                System.out.println(data.get(0));
-                Listenstate state = Listenstate.standard;
-                boolean isTrue = false;
-                while (!isTrue) {
+                List<Object> data = (List<Object>) o;
+                String value = (String) data.get(0);
+                float confidence = (float) data.get(1);
+
+                if (!value.equals("")) {
+
+                    System.out.println(confidence);
+                    System.out.println(value);
+                    if (confidence > 0.35f) {
 
 
-                    for (int i = 0; i < trueAnswers.size(); i++) {
-                        if (data.get(0).contains(trueAnswers.get(i))) {
-                            state = Listenstate.rightanswer;
-                        } else if (data.get(0).contains(falseAnswers.get(i))) {
-                            state = Listenstate.wronganswer;
-                        } else
-                            state = Listenstate.standard;
-                    }
+                        if (falseAnswers.contains(value)) {
+                            try {
+                                say("thats incorrect");
 
-                    if (state == Listenstate.wronganswer) {
-                        try {
-                            say("dat is helaas fout probeer het nog eens");
-                            isTrue = true;
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        } else if (trueAnswers.contains(value)) {
+                            try {
+                                say("correct");
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            try {
+                                say("im an idiot");
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
-                    } else if (state == Listenstate.rightanswer) {
-                        try {
-                            say("correct");
-                            isTrue = true;
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+
                     } else {
                         try {
-                            say("Ik heb u helaas niet verstaan");
+                            say("i don't know");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
                 }
+
             }
+
         });
+
         speechrec.subscribe("Test_asr");
         Thread.sleep(2000);
         speechrec.unsubscribe("Test_asr");
 
     }
-
-    enum Listenstate {
-        rightanswer,
-        wronganswer,
-        standard,
-    }
-
 }

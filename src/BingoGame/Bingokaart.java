@@ -4,7 +4,6 @@ import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -15,8 +14,8 @@ import java.util.HashSet;
 public class Bingokaart {
 
     static final String pathFontLemon = "BingoFonts\\LemonMilk.otf";
-    //static final String pathFontHardy = "BingoFonts\\Hardy Mind.ttf";
-    //static String imageFile = "src\\naoAfbeelding.png";
+    static final String pathFontHardy = "BingoFonts\\Hardy Mind.ttf";
+    static final String pathFontItim = "BingoFonts\\Itim-Regular.ttf";
     private String[] spelerCijfersz;
 
     public static void main(String[] args) throws DocumentException, IOException {
@@ -28,16 +27,19 @@ public class Bingokaart {
         BingoNAO naoo = new BingoNAO();
 
         BaseFont bf = BaseFont.createFont(pathFontLemon, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+        BaseFont bf2 = BaseFont.createFont(pathFontItim, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
         Font font1 = new Font(bf, 25); // voor bingo letters
         Font font2 = new Font(bf, 12); // voor introductie
-        Font font3 = new Font(bf, 8); // voor textje daarbeneden
+        Font font3 = new Font(bf2, 10); // voor textje daarbeneden
+        Font font4 = new Font(bf, 15);
 
         Document document = new Document(PageSize.A5);
         try {
             PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream("Bingokaart.pdf"));
             document.open();
+            font2.setColor(BaseColor.BLUE);
             document.add(new Paragraph("Welkom bij de naoBingo!", font2));
-            document.add(new Paragraph("Wanneer je klaar bent roep heel hard BINGOOO! en scan de QR code bij de robot om te zien of je wint.", font3));
+            document.add(new Paragraph("Wanneer je klaar bent roep heel hard BINGOOO! en scan de QR code bij de robot om te zien of je wint!", font3));
 
             PdfPTable bingotabel = new PdfPTable(5);
             bingotabel.setWidthPercentage(105);
@@ -49,24 +51,30 @@ public class Bingokaart {
             bingoletters.setSpacingBefore(20f);
             bingoletters.setWidths(kolomBreedtes);
 
-            for (String bingoLetter : bingoLetters) {
-                PdfPCell letter = new PdfPCell(new Paragraph(bingoLetter, font1));
+            for (int i = 0; i < bingoLetters.length; i ++) {
+                PdfPCell letter = new PdfPCell(new Paragraph(bingoLetters[i], font1));
+                letter.setPadding(10f);
                 letter.setBackgroundColor(BaseColor.YELLOW);
+                letter.setBorderWidth(1f);
                 letter.setFixedHeight(50f);
-                letter.setPaddingLeft(15f);
+                letter.setPaddingLeft(25f);
                 letter.setPaddingTop(10f);
+                if(i == 1)
+                    letter.setPaddingLeft(33f);
                 bingotabel.addCell(letter);
             }
 
             randomNummersOpKaart(bingoNummers);
             for (int i = 0; i < bingoNummers.length; i++) {
                 for (int j = 0; j < bingoNummers[i].length; j++) {
-                    PdfPCell a = new PdfPCell(new Paragraph(bingoNummers[i][j]));
-                    a.setBackgroundColor(color);
+
+                    font4.setColor(BaseColor.WHITE.brighter());
+                    PdfPCell a = new PdfPCell(new Paragraph(bingoNummers[i][j], font4));
+
+                    a.setBackgroundColor(BaseColor.BLUE);
                     a.setFixedHeight(50f);
-                    a.setPadding(5f);
-                    a.setPaddingLeft(18f);
-                    a.setPaddingTop(15f);
+                    a.setPaddingLeft(30f);
+                    a.setPaddingTop(20f);
 
                     spelercijferrz = spelercijferrz.concat(bingoNummers[i][j] + " ");
 
@@ -79,13 +87,15 @@ public class Bingokaart {
 
             BarcodeQRCode barcodeQRCode = new BarcodeQRCode(spelercijferrz, 1000, 1000, null);
             Image codeQrImage = barcodeQRCode.getImage();
-            Image mask = barcodeQRCode.getImage();
-            mask.makeMask();
-            codeQrImage.setImageMask(mask);
-            codeQrImage.scaleToFit(150, 150);
+            codeQrImage.scaleToFit(170, 170);
+
+            Image img = Image.getInstance("naoQI.jpg");
+            img.scaleToFit(150, 150);
+            img.setAbsolutePosition(230f, 40f);
 
             document.add(bingotabel);
             document.add(codeQrImage);
+            document.add(img);
             document.close();
             writer.close();
 
@@ -164,3 +174,5 @@ public class Bingokaart {
     }
 
 }
+
+

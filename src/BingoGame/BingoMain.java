@@ -23,7 +23,7 @@ public class BingoMain {
         nao.connect("naomi.robot.hva-robots.nl", 9559);
 
         nao.sayNummers();
-        nao.listen(bingoKeyword);
+        nao.listenToBingo(bingoKeyword);
 
 //        MqttClient client = new MqttClient(MQTT_HOST, MQTT_CLIENT_ID);
 //

@@ -24,49 +24,50 @@ public class BingoNAO {
         tts.say(tekst);
     }
 
-    public void listen(List<String> keyword) throws Exception {
-
+    public void listenToBingo(List<String> trueAnswers) throws Exception {
+        List<String> words = new ArrayList<>();
+        words.addAll(trueAnswers);
         ALSpeechRecognition speechrec = new ALSpeechRecognition(this.application.session());
         ALMemory memory = new ALMemory(this.application.session());
-        speechrec.setLanguage("Dutch");
-        speechrec.setVocabulary(keyword, false);
+        speechrec.setLanguage("English");
+        speechrec.setVocabulary(words, false);
+
 
         memory.subscribeToEvent("WordRecognized", new EventCallback() {
             @Override
             public void onEvent(Object o) throws InterruptedException, CallError {
-                ArrayList<String> data = (ArrayList<String>) o;
-                System.out.println(data.get(0));
-                Listenstate state = Listenstate.standard;
-                boolean isTrue = false;
-                while (!isTrue) {
+                List<Object> data = (List<Object>) o;
+                String value = (String) data.get(0);
+                float confidence = (float) data.get(1);
 
-                    for (String s : keyword) {
-                        if (data.get(0).contains(s)) {
-                            state = Listenstate.keyword;
-                        } else
-                            state = Listenstate.standard;
-                    }
+                if (!value.equals("")) {
 
-                    if (state == Listenstate.keyword) {
-                        try {
-                            say("Scan de QR code van je bingokaart om te zien of je echt gewonnen hebt.");
+                    System.out.println(confidence);
+                    System.out.println(value);
+                    if (confidence > 0.35f) {
 
-                            scan();
-
-                            isTrue = true;
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                        if (trueAnswers.contains(value)) {
+                            try {
+                                say("Scan de qr code van je bingokaart bij mijn hoofd om te zien of je gewonnen hebt.");
+                                scan();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
+
                     } else {
                         try {
-                            say("Ik heb u helaas niet verstaan");
+                            say("Ik heb je niet begrepen. Schreeuw wat harder!");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
                 }
+
             }
+
         });
+
         speechrec.subscribe("Test_asr");
         Thread.sleep(2000);
         speechrec.unsubscribe("Test_asr");
@@ -134,7 +135,7 @@ public class BingoNAO {
                         System.exit(0);
                     } else {
                         try {
-                            say("Wie wil jij nou bedriegen hier! Het spelletje wordt nu weer voortgezet.");
+                            say("Je hebt nog niet gewonnen. Het spelletje wordt nu weer voortgezet.");
                             Thread.sleep(2000);
                             sayNummers();
                         } catch (Exception e) {
