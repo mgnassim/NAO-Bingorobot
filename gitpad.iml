@@ -16,18 +16,32 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="pdftest-7.1.14" level="project" />
+    <orderEntry type="library" name="com.itextpdf.maven:itextdoc:2.0.0" level="project" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/Downloads/Apps/java-naoqi-sdk-2.5.6.5-win32-vs2013.jar!/" />
+          <root url="jar://$USER_HOME$/Downloads/org.eclipse.paho.client.mqttv3-1.2.5.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../json-simple-1.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+<<<<<<< HEAD
     <orderEntry type="library" name="pdftest-7.1.14" level="project" />
     <orderEntry type="library" name="com.itextpdf.maven:itextdoc:2.0.0" level="project" />
     <orderEntry type="library" name="paho-mqtt" level="application" />
     <orderEntry type="library" exported="" name="org.eclipse.paho.client.mqttv3-1.2.5" level="project" />
+=======
+>>>>>>> 3e7e4c5c19f586b9a21904ed272c983022c7a7a4
   </component>
 </module>
