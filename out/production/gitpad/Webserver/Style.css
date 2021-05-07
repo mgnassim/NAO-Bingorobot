@@ -1,0 +1,36 @@
+body {
+    font-family: "Open Sans", sans-serif;
+    background-color: darkseagreen;
+}
+.omslag {
+    color: antiquewhite;
+    margin-left: auto;
+    margin-top: 75px;
+    width: 70%;
+}
+
+input {
+    width : 150px;
+    margin: 0;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+input[type=button] {
+    background-color: antiquewhite;
+    border: none;
+    color: darkseagreen;
+    padding: 16px 32px;
+    text-decoration: none;
+    font-weight: bold;
+    margin: 25px 200px;
+    cursor: pointer;
+}
+
+#namen {
+    word-spacing: 30px;
+    font-size: 20px;
+    font-family: "Open Sans", sans-serif;
+    color: antiquewhite;
+}

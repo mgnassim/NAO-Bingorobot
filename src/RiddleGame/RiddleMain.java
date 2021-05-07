@@ -7,8 +7,6 @@ public class RiddleMain {
 
     public void sayRiddle(String riddle, List<String> correctAwnsers, List<String> falseAwnsers) throws Exception {
         nao.say(riddle);
-
-
     }
 
 }

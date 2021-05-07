@@ -27,5 +27,7 @@
     </orderEntry>
     <orderEntry type="library" name="pdftest-7.1.14" level="project" />
     <orderEntry type="library" name="com.itextpdf.maven:itextdoc:2.0.0" level="project" />
+    <orderEntry type="library" name="paho-mqtt" level="application" />
+    <orderEntry type="library" exported="" name="org.eclipse.paho.client.mqttv3-1.2.5" level="project" />
   </component>
 </module>
