@@ -156,8 +156,3 @@ public class BingoNAO {
     }
 
 }
-
-enum Listenstate {
-    standard,
-    keyword
-}
