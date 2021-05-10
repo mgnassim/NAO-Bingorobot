@@ -24,9 +24,9 @@ public class BingoNAO {
         tts.say(tekst);
     }
 
-    public void listenToBingo(List<String> trueAnswers) throws Exception {
+    public void listenToBingo() throws Exception {
         List<String> words = new ArrayList<>();
-        words.addAll(trueAnswers);
+        words.add("Bingo");
         ALSpeechRecognition speechrec = new ALSpeechRecognition(this.application.session());
         ALMemory memory = new ALMemory(this.application.session());
         speechrec.setLanguage("English");
@@ -44,28 +44,16 @@ public class BingoNAO {
 
                     System.out.println(confidence);
                     System.out.println(value);
-                    if (confidence > 0.35f) {
-
-                        if (trueAnswers.contains(value)) {
+                    if (confidence > 0.55f) {
                             try {
                                 say("Scan de qr code van je bingokaart bij mijn hoofd om te zien of je gewonnen hebt.");
                                 scan();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                        }
-
-                    } else {
-                        try {
-                            say("Ik heb je niet begrepen. Schreeuw wat harder!");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
                     }
                 }
-
             }
-
         });
 
         speechrec.subscribe("Test_asr");
@@ -74,7 +62,7 @@ public class BingoNAO {
 
     }
 
-    public void sayNummers() throws Exception {
+    public void sayNumbers() throws Exception {
 
         int a = 0;
         while (true) {
@@ -137,7 +125,7 @@ public class BingoNAO {
                         try {
                             say("Je hebt nog niet gewonnen. Het spelletje wordt nu weer voortgezet.");
                             Thread.sleep(2000);
-                            sayNummers();
+                            sayNumbers();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -153,6 +141,12 @@ public class BingoNAO {
             e.printStackTrace();
         }
 
+
+
+    }
+
+    public static void call() throws Exception {
+        BingoMain.main(null);
     }
 
 }

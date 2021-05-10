@@ -38,7 +38,9 @@ public class BingoMain {
                 System.out.println(topic);
                 System.out.print("Bericht: ");
                 System.out.println(mqttMessage.toString());
-                nao.say(mqttMessage.toString());
+                // start de bingo
+                nao.sayNumbers();
+                nao.listenToBingo();
             }
 
             @Override
@@ -48,10 +50,6 @@ public class BingoMain {
         });
 
         client.subscribe("bilalma/robot/bingo");
-/*
-        nao.say("Ik kan nederlands spreken");
-
-        while (true) Thread.sleep(1000);*/
 
     }
 }
