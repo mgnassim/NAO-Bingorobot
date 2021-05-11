@@ -15,8 +15,9 @@ public class BingoMain {
 
     public static void main(String[] args) throws Exception {
 
+        // Creating an object
         BingoNAO nao = new BingoNAO();
-        nao.connect("naomi.robot.hva-robots.nl", 9559);
+        nao.connect("padricia.robot.hva-robots.nl", 9559);
 
         MqttClient client = new MqttClient(MQTT_HOST, MqttClient.generateClientId());
         MqttConnectOptions connectOptions = new MqttConnectOptions();
@@ -38,9 +39,13 @@ public class BingoMain {
                 System.out.println(topic);
                 System.out.print("Bericht: ");
                 System.out.println(mqttMessage.toString());
-                // start de bingo
+                // start the bingo game
                 nao.sayNumbers();
                 nao.listenToBingo();
+
+               /* while (true) {
+                    Thread.sleep(1000);
+                }*/
             }
 
             @Override
