@@ -2,6 +2,8 @@ package BingoGame;
 
 import org.eclipse.paho.client.mqttv3.*;
 
+import java.util.ArrayList;
+
 public class BingoMain {
 
     // Host of the MQTT broker
@@ -18,6 +20,7 @@ public class BingoMain {
         // Creating an object
         BingoNAO nao = new BingoNAO();
         nao.connect("padricia.robot.hva-robots.nl", 9559);
+        ArrayList<String> spokenNumbers = new ArrayList<>();
 
         MqttClient client = new MqttClient(MQTT_HOST, MqttClient.generateClientId());
         MqttConnectOptions connectOptions = new MqttConnectOptions();
@@ -40,12 +43,12 @@ public class BingoMain {
                 System.out.print("Bericht: ");
                 System.out.println(mqttMessage.toString());
                 // start the bingo game
-                nao.sayNumbers();
-                nao.listenToBingo();
-
-               /* while (true) {
-                    Thread.sleep(1000);
-                }*/
+                boolean hasBingo = false;
+                while(!hasBingo) {
+                    nao.sayNumbers(spokenNumbers);
+                    hasBingo = nao.listenToBingo(spokenNumbers);
+                }
+               
             }
 
             @Override
@@ -57,4 +60,6 @@ public class BingoMain {
         client.subscribe("bilalma/robot/bingo");
 
     }
+
+
 }
