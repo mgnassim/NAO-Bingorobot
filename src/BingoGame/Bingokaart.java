@@ -1,115 +1,157 @@
 package BingoGame;
 
 import com.itextpdf.text.*;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
 import com.itextpdf.text.pdf.*;
+import org.eclipse.paho.client.mqttv3.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
+
+import java.awt.*;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 
 public class Bingokaart {
 
+    public static String MQTT_HOST = "tcp://mqtt.hva-robots.nl:1883";
+    // Client id, unique name for each client, prefix with your username
+    public static String MQTT_CLIENT_ID = "bilalma_test";
+    // Username from hva-robots.nl
+    public static String MQTT_USERNAME = "bilalma";
+    // Password from hva-robots.nl
+    public static String MQTT_PASSWORD = "lo7ooKsNuabwdwvL2exq";
+
     static final String pathFontLemon = "BingoFonts\\LemonMilk.otf";
-    static final String pathFontHardy = "BingoFonts\\Hardy Mind.ttf";
     static final String pathFontItim = "BingoFonts\\Itim-Regular.ttf";
-    private String[] spelerCijfersz;
 
-    public static void main(String[] args) throws DocumentException, IOException {
-        final String[] bingoLetters = {"B", "I", "N", "G", "O"};
-        String[][] bingoNummers = new String[5][5];
-        String spelercijferrz = "";
-        final float[] kolomBreedtes = {2f, 2f, 2f, 2f, 2f};
-        BaseColor color = new BaseColor(107, 217, 57);
-        BingoNAO naoo = new BingoNAO();
+    public void call() throws MqttException, DocumentException, IOException {
+        Bingokaart.main(null);
+    }
 
-        BaseFont bf = BaseFont.createFont(pathFontLemon, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-        BaseFont bf2 = BaseFont.createFont(pathFontItim, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-        Font font1 = new Font(bf, 25); // voor bingo letters
-        Font font2 = new Font(bf, 12); // voor introductie
-        Font font3 = new Font(bf2, 10); // voor textje daarbeneden
-        Font font4 = new Font(bf, 15);
+    public static void main(String[] args) throws DocumentException, IOException, MqttException {
+        MqttClient client = new MqttClient(MQTT_HOST, MqttClient.generateClientId());
+        MqttConnectOptions connectOptions = new MqttConnectOptions();
+        connectOptions.setUserName(MQTT_USERNAME);
+        connectOptions.setPassword(MQTT_PASSWORD.toCharArray());
 
-        Document document = new Document(PageSize.A5);
-        try {
-            PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream("Bingokaart.pdf"));
-            document.open();
-            font2.setColor(BaseColor.BLUE);
-            document.add(new Paragraph("Welkom bij de naoBingo!", font2));
-            document.add(new Paragraph("Wanneer je klaar bent roep heel hard BINGOOO! en scan de QR code bij de robot om te zien of je wint!", font3));
+        client.connect(connectOptions);
 
-            PdfPTable bingotabel = new PdfPTable(5);
-            bingotabel.setWidthPercentage(105);
-            bingotabel.setSpacingBefore(5f);
-            bingotabel.setWidths(kolomBreedtes);
+        client.setCallback(new MqttCallback() {
+            @Override
+            public void connectionLost(Throwable throwable) {
 
-            PdfPTable bingoletters = new PdfPTable(5);
-            bingoletters.setWidthPercentage(105);
-            bingoletters.setSpacingBefore(20f);
-            bingoletters.setWidths(kolomBreedtes);
-
-            for (int i = 0; i < bingoLetters.length; i ++) {
-                PdfPCell letter = new PdfPCell(new Paragraph(bingoLetters[i], font1));
-                letter.setPadding(10f);
-                letter.setBackgroundColor(BaseColor.YELLOW);
-                letter.setBorderWidth(1f);
-                letter.setFixedHeight(50f);
-                letter.setPaddingLeft(25f);
-                letter.setPaddingTop(10f);
-                if(i == 1)
-                    letter.setPaddingLeft(33f);
-                bingotabel.addCell(letter);
             }
 
-            randomNummersOpKaart(bingoNummers);
-            for (int i = 0; i < bingoNummers.length; i++) {
-                for (int j = 0; j < bingoNummers[i].length; j++) {
+            @Override
+            public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
+                final String[] bingoLetters = {"B", "I", "N", "G", "O"};
+                final String[][] bingoNummers = new String[5][5];
+                final float[] kolomBreedtes = {2f, 2f, 2f, 2f, 2f};
+                final BaseFont bf = BaseFont.createFont(pathFontLemon, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+                final BaseFont bf2 = BaseFont.createFont(pathFontItim, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+                final Font font1 = new Font(bf, 25); // for bingo characters
+                final Font font2 = new Font(bf, 12); // for bigger intro text
+                final Font font3 = new Font(bf2, 10); // for intro text
+                final Font font4 = new Font(bf, 15); // for bingo numbers
+                final Document document = new Document(PageSize.A5);
+                final PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream("Bingokaart.pdf"));
+                String spelercijfers = "";
+                ArrayList<PdfPTable> bingoTables = new ArrayList<>();
+                bingoTables.add(new PdfPTable(bingoNummers.length));
+                ArrayList<BarcodeQRCode> qrCodes = new ArrayList<>();
+                int index = 0;
+                System.out.println("Bericht ontvangen");
+                System.out.print("Topic: ");
+                System.out.println(topic);
+                System.out.print("Bericht: ");
+                System.out.println(mqttMessage.toString());
 
-                    font4.setColor(BaseColor.WHITE.brighter());
-                    PdfPCell a = new PdfPCell(new Paragraph(bingoNummers[i][j], font4));
+                for (int cards = 0; cards < Integer.parseInt(mqttMessage.toString()); cards++) {
+                    try {
+                        document.open();
+                        font2.setColor(BaseColor.BLUE);
+                        document.add(new Paragraph("Welkom bij de naoBingo!", font2));
+                        document.add(new Paragraph("Wanneer je klaar bent roep heel hard BINGOOO! en scan de QR code bij de robot om te zien of je wint!", font3));
 
-                    a.setBackgroundColor(BaseColor.BLUE);
-                    a.setFixedHeight(50f);
-                    a.setPaddingLeft(30f);
-                    a.setPaddingTop(20f);
+                        bingoTables.get(index).setWidthPercentage(105);
+                        bingoTables.get(index).setSpacingBefore(5f);
+                        bingoTables.get(index).setWidths(kolomBreedtes);
 
-                    spelercijferrz = spelercijferrz.concat(bingoNummers[i][j] + " ");
+                        for (int i = 0; i < 5; i++) {
+                            PdfPCell letter = new PdfPCell(new Paragraph(bingoLetters[i], font1));
+                            letter.setPadding(10f);
+                            letter.setBackgroundColor(BaseColor.YELLOW);
+                            letter.setBorderWidth(1f);
+                            letter.setFixedHeight(50f);
+                            letter.setPaddingLeft(25f);
+                            letter.setPaddingTop(10f);
+                            if (i == 1)
+                                letter.setPaddingLeft(33f);
+                            bingoTables.get(index).addCell(letter);
+                        }
 
-                    bingotabel.addCell(a);
+                        randomNummersOpKaart(bingoNummers);
+                        for (int i = 0; i < bingoNummers.length; i++) {
+                            for (int j = 0; j < bingoNummers[i].length; j++) {
+
+                                font4.setColor(BaseColor.WHITE.brighter());
+                                PdfPCell a = new PdfPCell(new Paragraph(bingoNummers[i][j], font4));
+
+                                a.setBackgroundColor(BaseColor.BLUE);
+                                a.setFixedHeight(50f);
+                                a.setPaddingLeft(30f);
+                                a.setPaddingTop(20f);
+
+                                spelercijfers = spelercijfers.concat(bingoNummers[i][j] + " ");
+                                bingoTables.get(index).addCell(a);
+
+                            }
+                        }
+
+                        qrCodes.add(new BarcodeQRCode(spelercijfers, 1000, 1000, null));
+                        Image codeQrImage = qrCodes.get(index).getImage();
+                        codeQrImage.scaleToFit(180, 180);
+                        codeQrImage.setAbsolutePosition(20, 30);
+
+                        Image img = Image.getInstance("naoQI.jpg");
+                        img.scaleToFit(150, 150);
+                        img.setAbsolutePosition(230f, 40f);
+
+                        document.add(bingoTables.get(index));
+                        document.add(img);
+                        document.add(codeQrImage);
+                        document.newPage();
+
+                        System.out.println("\nBingokaart " + (index + 1) + " is gemaakt.");
+                        System.out.println("Met cijfers: " + spelercijfers);
+
+                        bingoTables.add(new PdfPTable(5));
+                        spelercijfers = "";
+                        index++;
+
+                    } catch (DocumentException | FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
 
                 }
+                document.close();
+                writer.close();
+                Desktop.getDesktop().open(new File("Bingokaart.pdf"));
             }
 
-            String[] spelerCijfersz = spelercijferrz.split(" ");
+            @Override
+            public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
 
-            BarcodeQRCode barcodeQRCode = new BarcodeQRCode(spelercijferrz, 1000, 1000, null);
-            Image codeQrImage = barcodeQRCode.getImage();
-            codeQrImage.scaleToFit(170, 170);
-
-            Image img = Image.getInstance("naoQI.jpg");
-            img.scaleToFit(150, 150);
-            img.setAbsolutePosition(230f, 40f);
-
-            document.add(bingotabel);
-            document.add(codeQrImage);
-            document.add(img);
-            document.close();
-            writer.close();
-
-            System.out.println(naoo.gezegdeCijfers);
-
-        } catch (DocumentException | FileNotFoundException e) {
-            e.printStackTrace();
-        }
+            }
+        });
+        client.subscribe("bilalma/robot/bingo2");
     }
 
     private static void randomNummersOpKaart(String[][] array) {
 
-        int[][] bingoNummersv2 = new int[5][5];
         ArrayList<String> cardNumbers = new ArrayList<>();
 
         for (int i = 0; i < array.length; i++) {
@@ -163,14 +205,10 @@ public class Bingokaart {
     }
 
     public boolean checkPlayersCard(String[] robotCijfers, String[] spelerCijfers) {
-        return new HashSet<String>(Arrays.asList(robotCijfers)).containsAll(Arrays.asList(spelerCijfers));
+        return new HashSet<>(Arrays.asList(robotCijfers)).containsAll(Arrays.asList(spelerCijfers));
     }
 
-    public String[] getSpelerCijfersz() {
-        return getSpelerCijfersz().clone();
-    }
-
-    public String toJSON(String[][] spelerCombis) {
+    public String toJSON() {
 
         JSONObject jsonObject = new JSONObject();
         JSONArray jsonArray = new JSONArray();
@@ -196,5 +234,6 @@ public class Bingokaart {
     }
 
 }
+
 
 
