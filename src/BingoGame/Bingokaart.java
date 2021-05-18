@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -106,37 +107,55 @@ public class Bingokaart {
         }
     }
 
-    private static void randomNummersOpKaart(String[][] Array) {
+    private static void randomNummersOpKaart(String[][] array) {
 
         int[][] bingoNummersv2 = new int[5][5];
+        ArrayList<String> cardNumbers = new ArrayList<>();
 
-        for (int i = 0; i < Array.length; i++) {
-            for (int j = 0; j < Array[i].length; j++) {
+        for (int i = 0; i < array.length; i++) {
+            String nummer = String.valueOf((int) (Math.random() * ((15 - 1) + 1)) + 1);
 
-                switch (j) {
-                    case 0:
-                        bingoNummersv2[i][j] = (int) (Math.random() * ((15 - 1) + 1)) + 1;
-                        Array[i][j] = String.valueOf(bingoNummersv2[i][j]);
-                        break;
-                    case 1:
-                        bingoNummersv2[i][j] = (int) (Math.random() * ((30 - 16) + 1)) + 16;
-                        Array[i][j] = String.valueOf(bingoNummersv2[i][j]);
-                        break;
-                    case 2:
-                        bingoNummersv2[i][j] = (int) (Math.random() * ((45 - 31) + 1)) + 31;
-                        Array[i][j] = String.valueOf(bingoNummersv2[i][j]);
-                        break;
-                    case 3:
-                        bingoNummersv2[i][j] = (int) (Math.random() * ((60 - 46) + 1)) + 46;
-                        Array[i][j] = String.valueOf(bingoNummersv2[i][j]);
-                        break;
-                    case 4:
-                        bingoNummersv2[i][j] = (int) (Math.random() * ((75 - 61) + 1)) + 61;
-                        Array[i][j] = String.valueOf(bingoNummersv2[i][j]);
-                        break;
-                }
-
+            while (cardNumbers.contains(nummer)) {
+                nummer = String.valueOf((int) (Math.random() * ((15 - 1) + 1)) + 1);
             }
+            array[i][0] = nummer;
+            cardNumbers.add(nummer);
+        }
+        for (int i = 0; i < array.length; i++) {
+            String nummer = String.valueOf((int) (Math.random() * ((30 - 16) + 1)) + 16);
+
+            while (cardNumbers.contains(nummer)) {
+                nummer = String.valueOf((int) (Math.random() * ((30 - 16) + 1)) + 16);
+            }
+            array[i][1] = nummer;
+            cardNumbers.add(nummer);
+        }
+        for (int i = 0; i < array.length; i++) {
+            String nummer = String.valueOf((int) (Math.random() * ((45 - 31) + 1)) + 31);
+
+            while (cardNumbers.contains(nummer)) {
+                nummer = String.valueOf((int) (Math.random() * ((45 - 31) + 1)) + 31);
+            }
+            array[i][2] = nummer;
+            cardNumbers.add(nummer);
+        }
+        for (int i = 0; i < array.length; i++) {
+            String nummer = String.valueOf((int) (Math.random() * ((60 - 46) + 1)) + 46);
+
+            while (cardNumbers.contains(nummer)) {
+                nummer = String.valueOf((int) (Math.random() * ((60 - 46) + 1)) + 46);
+            }
+            array[i][3] = nummer;
+            cardNumbers.add(nummer);
+        }
+        for (int i = 0; i < array.length; i++) {
+            String nummer = String.valueOf((int) (Math.random() * ((75 - 61) + 1)) + 61);
+
+            while (cardNumbers.contains(nummer)) {
+                nummer = String.valueOf((int) (Math.random() * ((75 - 61) + 1)) + 61);
+            }
+            array[i][4] = nummer;
+            cardNumbers.add(nummer);
         }
     }
 

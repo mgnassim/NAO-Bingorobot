@@ -47,7 +47,6 @@ public class BingoNAO {
                     if (confidence > 0.55f) {
                             try {
                                 say("Scan de qr code van je bingokaart bij mijn hoofd om te zien of je gewonnen hebt.");
-                                System.out.println("het werkt");
                                 scan();
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -80,8 +79,8 @@ public class BingoNAO {
             try {
                 say("Nummer " + String.valueOf(randomNummer));
                 Thread.sleep(1000);
-//                say("Ik herhaal het laatst genoemde nummer was" + randomNummer);
-//                Thread.sleep(1500);
+                say("Ik herhaal het laatst genoemde nummer was" + randomNummer);
+                Thread.sleep(1500);
 
             } catch (Exception e) {
                 e.printStackTrace();

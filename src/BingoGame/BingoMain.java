@@ -17,7 +17,7 @@ public class BingoMain {
 
         // Creating an object
         BingoNAO nao = new BingoNAO();
-        nao.connect("padricia.robot.hva-robots.nl", 9559);
+        nao.connect("padrick.robot.hva-robots.nl", 9559);
 
         MqttClient client = new MqttClient(MQTT_HOST, MqttClient.generateClientId());
         MqttConnectOptions connectOptions = new MqttConnectOptions();
@@ -55,6 +55,5 @@ public class BingoMain {
         });
 
         client.subscribe("bilalma/robot/bingo");
-
     }
 }
