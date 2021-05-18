@@ -230,5 +230,10 @@ public class Bingokaart {
         }
 
         return String.valueOf(jsonArray);
+
     }
+
 }
+
+
+
