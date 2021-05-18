@@ -120,6 +120,7 @@ public class Bingokaart {
             }
             array[i][0] = nummer;
             cardNumbers.add(nummer);
+
         }
         for (int i = 0; i < array.length; i++) {
             String nummer = String.valueOf((int) (Math.random() * ((30 - 16) + 1)) + 16);
@@ -157,6 +158,8 @@ public class Bingokaart {
             array[i][4] = nummer;
             cardNumbers.add(nummer);
         }
+
+
     }
 
     public boolean checkPlayersCard(String[] robotCijfers, String[] spelerCijfers) {
