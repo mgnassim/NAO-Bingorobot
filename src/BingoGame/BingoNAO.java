@@ -8,6 +8,8 @@ import com.aldebaran.qi.helper.proxies.*;
 import java.util.*;
 
 public class BingoNAO {
+
+    public ArrayList<String> spokenNumbers = new ArrayList<>();
     private Application application;
     protected Bingokaart bka = new Bingokaart();
 
@@ -20,18 +22,24 @@ public class BingoNAO {
     public void say(String tekst) throws Exception {
         ALTextToSpeech tts = new ALTextToSpeech(this.application.session());
         tts.setParameter("speed", 75f);
+        tts.setVolume(0.4f);
+        tts.setLanguage("Dutch");
         tts.say(tekst);
     }
 
-    public boolean listenToBingo(ArrayList<String> spokenNumbers) throws Exception {
+    public void configurationListenToBingo() throws Exception {
         List<String> words = new ArrayList<>();
         words.add("Bingo");
         ALSpeechRecognition speechrec = new ALSpeechRecognition(this.application.session());
         ALMemory memory = new ALMemory(this.application.session());
         speechrec.setLanguage("English");
-        speechrec.setVocabulary(words, false);
-        final boolean[] bingoTrue = {false};
+        try {
+            speechrec.unsubscribe("Test_asr");
+        } catch(Exception e) {
 
+        }
+
+        speechrec.setVocabulary(words, false);
 
         memory.subscribeToEvent("WordRecognized", new EventCallback() {
             @Override
@@ -44,11 +52,13 @@ public class BingoNAO {
 
                     System.out.println(confidence);
                     System.out.println(value);
-                    if (confidence > 0.55f) {
+
+                    BingoMain.bingo = true;
+
+                    if (confidence > 0.30f) {
                         try {
                             say("Scan de qr code van je bingokaart bij mijn hoofd om te zien of je gewonnen hebt.");
-                            System.out.println("het werkt");
-                            bingoTrue[0] = scan(spokenNumbers);
+                            scan();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -57,15 +67,18 @@ public class BingoNAO {
             }
         });
 
+    }
+
+    public void listenToBingo() throws Exception {
+        ALSpeechRecognition speechrec = new ALSpeechRecognition(this.application.session());
+
         speechrec.subscribe("Test_asr");
         Thread.sleep(2000);
         speechrec.unsubscribe("Test_asr");
-
-        return bingoTrue[0];
-
     }
 
-    public void sayNumbers(ArrayList<String> spokenNumbers) throws Exception {
+
+    public void sayNumbers() throws Exception {
 
 
         int randomNumber = (int) (Math.random() * 75) + 1;
@@ -81,7 +94,7 @@ public class BingoNAO {
             say("Nummer " + String.valueOf(randomNumber));
             Thread.sleep(1000);
 //                say("Ik herhaal het laatst genoemde nummer was" + randomNummer);
-//                Thread.sleep(1500);
+//                Thread.sleep(1500)
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -92,26 +105,36 @@ public class BingoNAO {
 
     }
 
-
-    public boolean scan(ArrayList<String> spokenNumbers) throws Exception {
+    public void barcodeReader() throws Exception {
+        ALMemory memory = new ALMemory(this.application.session());
         ALBarcodeReader scanner = new ALBarcodeReader(this.application.session());
+        memory.subscribeToEvent("BarcodeReader/BarcodeDetected", new EventCallback() {
+            @Override
+            public void onEvent(Object o) throws InterruptedException, CallError {
+                List<Object> data = (List<Object>) o;
+                ArrayList<String> qrCode = (ArrayList<String>) data.get(0);
+                System.out.println(data.get(0));
+
+            }
+        });
+        try {
+            scanner.unsubscribe("QR-Code");
+        } catch (Exception exception) {
+
+        }
+        scanner.subscribe("QR-Code");
+    }
+
+
+    public boolean scan() throws Exception {
+
         ALMemory memory = new ALMemory(this.application.session());
 
         try {
 
 
             say("geef me een barcode");
-            memory.subscribeToEvent("BarcodeReader/BarcodeDetected", new EventCallback() {
-                @Override
-                public void onEvent(Object o) throws InterruptedException, CallError {
-                    ArrayList<String> data = (ArrayList<String>) o;
-                    System.out.println(data.get(0));
 
-                }
-            });
-            scanner.subscribe("QR-Code");
-            Thread.sleep(5000);
-            scanner.unsubscribe("QR-Code");
 
 
             say("dank u wel");

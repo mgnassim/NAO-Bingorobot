@@ -107,7 +107,6 @@ public class Bingokaart {
 
                                 spelercijfers = spelercijfers.concat(bingoNummers[i][j] + " ");
                                 bingoTables.get(index).addCell(a);
-
                             }
                         }
 
