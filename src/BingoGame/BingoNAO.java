@@ -10,8 +10,11 @@ import java.util.*;
 public class BingoNAO {
 
     public ArrayList<String> spokenNumbers = new ArrayList<>();
-    private Application application;
     protected Bingokaart bka = new Bingokaart();
+    List<Object> data;
+    String value;
+    ArrayList<String> code;
+    private Application application;
 
     public void connect(String hostname, int port) {
         String robotUrl = "tcp://" + hostname + ":" + port;
@@ -27,6 +30,21 @@ public class BingoNAO {
         tts.say(tekst);
     }
 
+    public void animation(String path) throws Exception {
+        // Create an ALAniamationPlayer object and link it to the session
+        ALAnimationPlayer alAnimationPlayer = new ALAnimationPlayer(this.application.session());
+        // Make the robot do something
+        alAnimationPlayer.run(path);
+    }
+
+    public void animatedSpeech(String text) throws Exception {
+        // Create an ALAniamationSpeech object and link it to the session
+        ALAnimatedSpeech alAnimatedSpeech = new ALAnimatedSpeech(this.application.session());
+        // Make the robot do something
+        alAnimatedSpeech.say(text);
+
+    }
+
     public void configurationListenToBingo() throws Exception {
         List<String> words = new ArrayList<>();
         words.add("Bingo");
@@ -35,7 +53,7 @@ public class BingoNAO {
         speechrec.setLanguage("English");
         try {
             speechrec.unsubscribe("Test_asr");
-        } catch(Exception e) {
+        } catch (Exception e) {
 
         }
 
@@ -53,12 +71,17 @@ public class BingoNAO {
                     System.out.println(confidence);
                     System.out.println(value);
 
-                    BingoMain.bingo = true;
-
-                    if (confidence > 0.30f) {
+                    if (confidence > 0.40f) {
                         try {
                             say("Scan de qr code van je bingokaart bij mijn hoofd om te zien of je gewonnen hebt.");
-                            scan();
+                            if (scan()) {
+                                System.out.println("We hebben een winnaar!!!");
+                                BingoMain.bingo = true;
+                            }
+                            else{
+                                System.out.println("geen winnaar helaas");
+                                BingoMain.bingo = false;
+                            }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -79,30 +102,30 @@ public class BingoNAO {
 
 
     public void sayNumbers() throws Exception {
-
+        ALTextToSpeech tts = new ALTextToSpeech(this.application.session());
+        tts.setParameter("speed", 60f);
+        tts.setVolume(1.0f);
+        tts.setLanguage("Dutch");
 
         int randomNumber = (int) (Math.random() * 75) + 1;
 
         if (spokenNumbers.contains(String.valueOf(randomNumber))) {
-            while (!spokenNumbers.contains(String.valueOf(randomNumber)))
+            while (spokenNumbers.contains(String.valueOf(randomNumber)))
                 randomNumber = (int) (Math.random() * 75) + 1;
         }
 
         spokenNumbers.add(String.valueOf(randomNumber));
 
         try {
-            say("Nummer " + String.valueOf(randomNumber));
+            animatedSpeech("Het volgende nummer is ^start(animations/Stand/Gestures/shortrange)" + String.valueOf(randomNumber) + "^wait(animations/Stand/Gestures/shortrange)");
             Thread.sleep(1000);
-//                say("Ik herhaal het laatst genoemde nummer was" + randomNummer);
-//                Thread.sleep(1500)
+//            animatedSpeech("Ik herhaal het laatst genoemde nummer was" + randomNumber);
+//            Thread.sleep(1500);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         System.out.println(spokenNumbers);
-
-
     }
 
     public void barcodeReader() throws Exception {
@@ -112,9 +135,10 @@ public class BingoNAO {
             @Override
             public void onEvent(Object o) throws InterruptedException, CallError {
                 List<Object> data = (List<Object>) o;
-                ArrayList<String> qrCode = (ArrayList<String>) data.get(0);
-                System.out.println(data.get(0));
 
+                ArrayList<Object> qrCode = (ArrayList<Object>) data.get(0);
+                value = (String) qrCode.get(0);
+                System.out.println((String) qrCode.get(0));
             }
         });
         try {
@@ -125,31 +149,17 @@ public class BingoNAO {
         scanner.subscribe("QR-Code");
     }
 
-
     public boolean scan() throws Exception {
 
-        ALMemory memory = new ALMemory(this.application.session());
-
         try {
-
-
             say("geef me een barcode");
-
-
-
-            say("dank u wel");
         } catch (Exception e) {
             e.printStackTrace();
         }
-        ArrayList<String> data = (ArrayList<String>) memory.getData("QR-Code");
-        String value = data.get(0);
-        System.out.println(value);
-        String[] numbers = value.split(" ");
+        String[] numbers = value.split("\\s+");
 
         ArrayList<String> cardNumbers = new ArrayList<>(Arrays.asList(numbers));
 
         return spokenNumbers.contains(cardNumbers);
-
-
     }
 }

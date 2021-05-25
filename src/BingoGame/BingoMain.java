@@ -21,7 +21,7 @@ public class BingoMain {
 
         // Creating an object
         BingoNAO nao = new BingoNAO();
-        nao.connect("naomi.robot.hva-robots.nl", 9559);
+        nao.connect("padme.robot.hva-robots.nl", 9559);
 
         Bingokaart bka = new Bingokaart();
 
@@ -33,8 +33,6 @@ public class BingoMain {
         client.connect(connectOptions);
         nao.configurationListenToBingo();
         nao.barcodeReader();
-
-
         client.setCallback(new MqttCallback() {
             @Override
             public void connectionLost(Throwable throwable) {
@@ -50,12 +48,10 @@ public class BingoMain {
                 System.out.println(mqttMessage.toString());
                 // start the bingo game
 
-                while(!BingoMain.bingo) {
-                    nao.sayNumbers();
-                    nao.listenToBingo();
-                }
-
-
+                    while (!BingoMain.bingo) {
+                        nao.sayNumbers();
+                        nao.listenToBingo();
+                    }
             }
 
             @Override
@@ -65,8 +61,5 @@ public class BingoMain {
         });
 
         client.subscribe("bilalma/robot/bingo");
-
     }
-
-
 }
