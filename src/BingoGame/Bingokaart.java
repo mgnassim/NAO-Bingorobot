@@ -73,12 +73,15 @@ public class Bingokaart {
                     try {
                         document.open();
                         font2.setColor(BaseColor.BLUE);
+                        font1.setColor(BaseColor.WHITE);
                         document.add(new Paragraph("Welkom bij de naoBingo!", font2));
                         document.add(new Paragraph("Wanneer je klaar bent roep heel hard BINGOOO! en scan de QR code bij de robot om te zien of je wint!", font3));
 
                         bingoTables.get(index).setWidthPercentage(105);
                         bingoTables.get(index).setSpacingBefore(5f);
                         bingoTables.get(index).setWidths(kolomBreedtes);
+
+                        BaseColor ORANGEE = new BaseColor(255,165,0);
 
                         for (int i = 0; i < 5; i++) {
                             PdfPCell letter = new PdfPCell(new Paragraph(bingoLetters[i], font1));
@@ -93,14 +96,16 @@ public class Bingokaart {
                             bingoTables.get(index).addCell(letter);
                         }
 
+                        BaseColor GREENN = new BaseColor(27, 209, 85);
+
                         randomNummersOpKaart(bingoNummers);
                         for (int i = 0; i < bingoNummers.length; i++) {
                             for (int j = 0; j < bingoNummers[i].length; j++) {
 
-                                font4.setColor(BaseColor.WHITE.brighter());
+                                font4.setColor(BaseColor.WHITE);
                                 PdfPCell a = new PdfPCell(new Paragraph(bingoNummers[i][j], font4));
 
-                                a.setBackgroundColor(BaseColor.BLUE);
+                                a.setBackgroundColor(GREENN);
                                 a.setFixedHeight(50f);
                                 a.setPaddingLeft(30f);
                                 a.setPaddingTop(20f);
@@ -206,32 +211,6 @@ public class Bingokaart {
     public boolean checkPlayersCard(String[] robotCijfers, String[] spelerCijfers) {
         return new HashSet<>(Arrays.asList(robotCijfers)).containsAll(Arrays.asList(spelerCijfers));
     }
-
-    public String toJSON() {
-
-        JSONObject jsonObject = new JSONObject();
-        JSONArray jsonArray = new JSONArray();
-        String[][] bingoNummers = new String[5][5];
-
-        try (FileWriter file = new FileWriter("bingoKaartNummersVanSpeler.json")) {
-
-            for (int i = 0; i < bingoNummers.length; i++) {
-                for (int j = 0; j < bingoNummers[i].length; j++) {
-                    jsonArray.add(bingoNummers[i][j]);
-                }
-                jsonObject.put("speler nummers", jsonArray);
-            }
-            file.write(jsonObject.toString());
-            file.flush();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return String.valueOf(jsonArray);
-
-    }
-
 }
 
 
