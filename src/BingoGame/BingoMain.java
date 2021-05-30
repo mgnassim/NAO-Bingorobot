@@ -23,7 +23,7 @@ public class BingoMain {
         BingoNAO nao = new BingoNAO();
         nao.connect("padricia.robot.hva-robots.nl", 9559);
 
-        /*Bingokaart bka = new Bingokaart();
+        Bingokaart bka = new Bingokaart();
 
         MqttClient client = new MqttClient(MQTT_HOST, MqttClient.generateClientId());
         MqttConnectOptions connectOptions = new MqttConnectOptions();
@@ -68,7 +68,6 @@ public class BingoMain {
             }
         });
 
-        client.subscribe("bilalma/robot/bingo");*/
-        nao.animation("it102a-1/Dances The Macarena.crg");
+        client.subscribe("bilalma/robot/bingo");
     }
 }
