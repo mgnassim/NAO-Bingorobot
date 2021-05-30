@@ -21,7 +21,7 @@ public class BingoMain {
 
         // Creating an object
         BingoNAO nao = new BingoNAO();
-        nao.connect("padricia.robot.hva-robots.nl", 9559);
+        nao.connect("naomi.robot.hva-robots.nl", 9559);
 
         /*Bingokaart bka = new Bingokaart();
 
@@ -69,6 +69,7 @@ public class BingoMain {
         });
 
         client.subscribe("bilalma/robot/bingo");*/
-        nao.animation("it102a-1/Dances The Macarena.crg");
+        nao.standUp();
+        nao.animation("wd/ad");
     }
 }

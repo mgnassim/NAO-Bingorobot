@@ -46,7 +46,7 @@ public class BingoNAO {
     public void animation(String path) throws Exception {
         // Create an ALAniamationPlayer object and link it to the session
         ALAnimationPlayer alAnimationPlayer = new ALAnimationPlayer(this.application.session());
-        // Make the robot do something
+        // Make the robot do somethings
         alAnimationPlayer.run(path);
     }
 
@@ -125,7 +125,7 @@ public class BingoNAO {
                             Thread.sleep(5000);
                             if (scan()) {
                                 say("Gefeliciteerd je hebt gewonnen");
-                                animation("Dances The Macarena.crg");
+                                animation("wd/ad");
                                 System.out.println("We hebben een winnaar!!!");
                                 BingoMain.bingo = true;
                             }
