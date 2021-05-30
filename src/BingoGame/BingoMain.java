@@ -23,7 +23,7 @@ public class BingoMain {
         BingoNAO nao = new BingoNAO();
         nao.connect("naomi.robot.hva-robots.nl", 9559);
 
-        /*Bingokaart bka = new Bingokaart();
+        Bingokaart bka = new Bingokaart();
 
         MqttClient client = new MqttClient(MQTT_HOST, MqttClient.generateClientId());
         MqttConnectOptions connectOptions = new MqttConnectOptions();
@@ -68,8 +68,6 @@ public class BingoMain {
             }
         });
 
-        client.subscribe("bilalma/robot/bingo");*/
-        nao.standUp();
-        nao.animation("wd/ad");
+        client.subscribe("bilalma/robot/bingo");
     }
 }
