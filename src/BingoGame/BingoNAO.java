@@ -157,16 +157,14 @@ public class BingoNAO {
         tts.setVolume(1.0f);
         tts.setLanguage("Dutch");
 
-        int randomNumber = (int) (Math.random() * 75) + 1;
+        int randomNumber = (int) (Math.random() * 45) + 1;
 
         if (spokenNumbers.contains(String.valueOf(randomNumber))) {
             while (spokenNumbers.contains(String.valueOf(randomNumber)))
-                randomNumber = (int) (Math.random() * 75) + 1;
+                randomNumber = (int) (Math.random() * 45) + 1;
         }
-
         spokenNumbers.add(String.valueOf(randomNumber));
-
-        int a = 0;
+        
         try {
             animatedSpeech("Het volgende nummer is ^start(animations/Stand/Gestures/shortrange)" + String.valueOf(randomNumber) + "^wait(animations/Stand/Gestures/shortrange)");
             Thread.sleep(1000);
