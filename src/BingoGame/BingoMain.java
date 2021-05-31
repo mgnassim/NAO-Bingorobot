@@ -21,9 +21,9 @@ public class BingoMain {
 
         // Creating an object
         BingoNAO nao = new BingoNAO();
-        nao.connect("padricia.robot.hva-robots.nl", 9559);
+        nao.connect("corona.local", 9559);
 
-        /*Bingokaart bka = new Bingokaart();
+        Bingokaart bka = new Bingokaart();
 
         MqttClient client = new MqttClient(MQTT_HOST, MqttClient.generateClientId());
         MqttConnectOptions connectOptions = new MqttConnectOptions();
@@ -31,7 +31,7 @@ public class BingoMain {
         connectOptions.setPassword(MQTT_PASSWORD.toCharArray());
 
         client.connect(connectOptions);
-//        nao.standUp();
+        nao.standUp();
 //        nao.sit();
         nao.configurationListenToStart();
         nao.barcodeReader();
@@ -56,10 +56,10 @@ public class BingoMain {
                 BingoMain.bingo = false;
                 nao.configurationListenToBingo();
                 // start the bingo game
-                    while (!BingoMain.bingo) {
-                        nao.listenToWord();
-                        nao.sayNumbers();
-                    }
+                while (!BingoMain.bingo) {
+                    nao.listenToWord();
+                    nao.sayNumbers();
+                }
             }
 
             @Override
@@ -68,7 +68,6 @@ public class BingoMain {
             }
         });
 
-        client.subscribe("bilalma/robot/bingo");*/
-        nao.animation("it102a-1/Dances The Macarena.crg");
+        client.subscribe("bilalma/robot/bingo");
     }
 }

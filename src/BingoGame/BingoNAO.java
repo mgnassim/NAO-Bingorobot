@@ -38,7 +38,7 @@ public class BingoNAO {
     public void say(String tekst) throws Exception {
         ALTextToSpeech tts = new ALTextToSpeech(this.application.session());
         tts.setParameter("speed", 75f);
-        tts.setVolume(0.4f);
+        tts.setVolume(1.0f);
         tts.setLanguage("Dutch");
         tts.say(tekst);
     }
@@ -46,7 +46,7 @@ public class BingoNAO {
     public void animation(String path) throws Exception {
         // Create an ALAniamationPlayer object and link it to the session
         ALAnimationPlayer alAnimationPlayer = new ALAnimationPlayer(this.application.session());
-        // Make the robot do something
+        // Make the robot do somethings
         alAnimationPlayer.run(path);
     }
 
@@ -125,7 +125,7 @@ public class BingoNAO {
                             Thread.sleep(5000);
                             if (scan()) {
                                 say("Gefeliciteerd je hebt gewonnen");
-                                animation("Dances The Macarena.crg");
+                                animation("wd/ad");
                                 System.out.println("We hebben een winnaar!!!");
                                 BingoMain.bingo = true;
                             }
@@ -157,16 +157,14 @@ public class BingoNAO {
         tts.setVolume(1.0f);
         tts.setLanguage("Dutch");
 
-        int randomNumber = (int) (Math.random() * 75) + 1;
+        int randomNumber = (int) (Math.random() * 45) + 1;
 
         if (spokenNumbers.contains(String.valueOf(randomNumber))) {
             while (spokenNumbers.contains(String.valueOf(randomNumber)))
-                randomNumber = (int) (Math.random() * 75) + 1;
+                randomNumber = (int) (Math.random() * 45) + 1;
         }
-
         spokenNumbers.add(String.valueOf(randomNumber));
 
-        int a = 0;
         try {
             animatedSpeech("Het volgende nummer is ^start(animations/Stand/Gestures/shortrange)" + String.valueOf(randomNumber) + "^wait(animations/Stand/Gestures/shortrange)");
             Thread.sleep(1000);
