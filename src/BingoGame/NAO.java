@@ -7,7 +7,7 @@ import com.aldebaran.qi.helper.proxies.*;
 
 import java.util.*;
 
-public class BingoNAO {
+public class NAO {
 
     private List<String> words = new ArrayList<>();
     private ArrayList<String> spokenNumbers = new ArrayList<>();
@@ -26,13 +26,6 @@ public class BingoNAO {
         ALRobotPosture alRobotPosture = new ALRobotPosture(this.application.session());
         // Make the robot do something
         alRobotPosture.goToPosture("Stand", 0.75f);
-    }
-
-    public void sit () throws Exception {
-        // Create an ALRobotPosture object and link it to the session
-        ALRobotPosture alRobotPosture = new ALRobotPosture(this.application.session());
-        // Make the robot do something
-        alRobotPosture.goToPosture("Sit", 0.75f);
     }
 
     public void say(String tekst) throws Exception {
@@ -84,7 +77,7 @@ public class BingoNAO {
                     System.out.println(value);
 
                     if (confidence > 0.30f) {
-                        BingoMain.bingo = true;
+                        Main.bingo = true;
                         try {
                             say("Oké, we kunnen beginnen");
                         } catch (Exception e) {
@@ -101,7 +94,7 @@ public class BingoNAO {
         words.add("Bingo");
         ALSpeechRecognition speechrec = new ALSpeechRecognition(this.application.session());
         ALMemory memory = new ALMemory(this.application.session());
-        speechrec.setLanguage("English");
+        speechrec.setLanguage("dutch");
         try {
             speechrec.unsubscribe("Test_asr");
         } catch (Exception e) {
@@ -127,12 +120,12 @@ public class BingoNAO {
                                 say("Gefeliciteerd je hebt gewonnen");
                                 animation("wd/ad");
                                 System.out.println("We hebben een winnaar!!!");
-                                BingoMain.bingo = true;
+                                Main.bingo = true;
                             }
                             else{
                                 say("U heeft helaas niet gewonnen");
                                 System.out.println("geen winnaar helaas");
-                                BingoMain.bingo = false;
+                                Main.bingo = false;
                             }
                         } catch (Exception e) {
                             System.out.println("Geen barcode ontvangen");

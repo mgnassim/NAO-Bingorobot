@@ -2,9 +2,7 @@ package BingoGame;
 
 import org.eclipse.paho.client.mqttv3.*;
 
-import java.util.ArrayList;
-
-public class BingoMain {
+public class Main {
 
     // Host of the MQTT broker
     public static String MQTT_HOST = "tcp://mqtt.hva-robots.nl:1883";
@@ -20,7 +18,7 @@ public class BingoMain {
     public static void main(String[] args) throws Exception {
 
         // Creating an object
-        BingoNAO nao = new BingoNAO();
+        NAO nao = new NAO();
         nao.connect("corona.local", 9559);
 
         Bingokaart bka = new Bingokaart();
@@ -32,7 +30,6 @@ public class BingoMain {
 
         client.connect(connectOptions);
         nao.standUp();
-//        nao.sit();
         nao.configurationListenToStart();
         nao.barcodeReader();
         client.setCallback(new MqttCallback() {
@@ -50,13 +47,13 @@ public class BingoMain {
                 System.out.println(mqttMessage.toString());
 
                 nao.say("als u wilt beginnen, zeg dan Start");
-                while(!BingoMain.bingo){
+                while(!Main.bingo){
                     nao.listenToWord();
                 }
-                BingoMain.bingo = false;
+                Main.bingo = false;
                 nao.configurationListenToBingo();
                 // start the bingo game
-                while (!BingoMain.bingo) {
+                while (!Main.bingo) {
                     nao.listenToWord();
                     nao.sayNumbers();
                 }
