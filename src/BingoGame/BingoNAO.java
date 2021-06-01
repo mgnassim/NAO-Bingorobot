@@ -28,17 +28,11 @@ public class BingoNAO {
         alRobotPosture.goToPosture("Stand", 0.75f);
     }
 
-    public void sit () throws Exception {
-        // Create an ALRobotPosture object and link it to the session
-        ALRobotPosture alRobotPosture = new ALRobotPosture(this.application.session());
-        // Make the robot do something
-        alRobotPosture.goToPosture("Sit", 0.75f);
-    }
 
     public void say(String tekst) throws Exception {
         ALTextToSpeech tts = new ALTextToSpeech(this.application.session());
         tts.setParameter("speed", 75f);
-        tts.setVolume(0.4f);
+        tts.setVolume(1.0f);
         tts.setLanguage("Dutch");
         tts.say(tekst);
     }
@@ -62,7 +56,6 @@ public class BingoNAO {
         words.add("Start");
         ALSpeechRecognition speechrec = new ALSpeechRecognition(this.application.session());
         ALMemory memory = new ALMemory(this.application.session());
-        speechrec.setLanguage("Dutch");
         try {
             speechrec.unsubscribe("Test_asr");
         } catch(Exception e) {
@@ -84,7 +77,7 @@ public class BingoNAO {
                     System.out.println(value);
 
                     if (confidence > 0.30f) {
-                        BingoMain.bingo = true;
+                        BingoMain.start = true;
                         try {
                             say("Oké, we kunnen beginnen");
                         } catch (Exception e) {
@@ -125,9 +118,9 @@ public class BingoNAO {
                             Thread.sleep(5000);
                             if (scan()) {
                                 say("Gefeliciteerd je hebt gewonnen");
+                                BingoMain.bingo = true;
                                 animation("wd/ad");
                                 System.out.println("We hebben een winnaar!!!");
-                                BingoMain.bingo = true;
                             }
                             else{
                                 say("U heeft helaas niet gewonnen");
@@ -147,7 +140,7 @@ public class BingoNAO {
         ALSpeechRecognition speechrec = new ALSpeechRecognition(this.application.session());
 
         speechrec.subscribe("Test_asr");
-        Thread.sleep(5000);
+        Thread.sleep(3000);
         speechrec.unsubscribe("Test_asr");
     }
 

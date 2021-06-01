@@ -16,12 +16,13 @@ public class BingoMain {
     public static String MQTT_PASSWORD = "lo7ooKsNuabwdwvL2exq";
 
     public static boolean bingo = false;
+    public static boolean start = false;
 
     public static void main(String[] args) throws Exception {
 
         // Creating an object
         BingoNAO nao = new BingoNAO();
-        nao.connect("naomi.robot.hva-robots.nl", 9559);
+        nao.connect("padrick.robot.hva-robots.nl", 9559);
 
         Bingokaart bka = new Bingokaart();
 
@@ -31,7 +32,7 @@ public class BingoMain {
         connectOptions.setPassword(MQTT_PASSWORD.toCharArray());
 
         client.connect(connectOptions);
-//        nao.standUp();
+        nao.standUp();
 //        nao.sit();
         nao.configurationListenToStart();
         nao.barcodeReader();
@@ -50,13 +51,13 @@ public class BingoMain {
                 System.out.println(mqttMessage.toString());
 
                 nao.say("als u wilt beginnen, zeg dan Start");
-                while(!BingoMain.bingo){
+                while(BingoMain.start == false){
                     nao.listenToWord();
                 }
-                BingoMain.bingo = false;
+                BingoMain.start = false;
                 nao.configurationListenToBingo();
                 // start the bingo game
-                    while (!BingoMain.bingo) {
+                    while (BingoMain.bingo == false) {
                         nao.listenToWord();
                         nao.sayNumbers();
                     }
