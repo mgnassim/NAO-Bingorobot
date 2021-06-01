@@ -19,19 +19,19 @@ For the use of this code the following external libraries are needed:
 
 When having downloaded all these files onto your computer, you have to add them to your project.
 To add the files to your project do the following:
-    ~ Navigate to the File Tab top left of your screen
-    ~ Scroll down to 'Project Structure'
-    ~ Navigate to Modules 
-    ~ Go to dependencies 
-    ~ Click the '+' icon beneath Module SDK (depending on your intellij version)
-    ~ Click JARs or directories
-    ~ Navigate to the file you downloaded and click Add.
-    ~ Do this for all your files.
+Navigate to the File Tab top left of your screen
+Scroll down to 'Project Structure'
+Navigate to Modules 
+Go to dependencies 
+Click the '+' icon beneath Module SDK (depending on your intellij version)
+Click JARs or directories
+Navigate to the file you downloaded and click Add.
+Do this for all your files.
 
 
 SDK Installation:
-    This program runs on Java 8 and *32-bits!* so be sure to download Java 8 onto your computer.
-    You are able to do this from the official Oracle site, here is a link:
+This program runs on Java 8 and *32-bits!* so be sure to download Java 8 onto your computer.
+You are able to do this from the official Oracle site, here is a link:
         https://www.oracle.com/nl/java/technologies/javase/javase-jdk8-downloads.html
 
 
@@ -43,10 +43,10 @@ And for the bingo card generator used in the website. To be able to use these fu
 Paho is the main implementation used for this MQTT server.
 
 Basics being used for MQTT communication between robot and website:
-    ~ An HTML file containing:
+     An HTML file containing:
         an input or a button to send values to Javascript
         an <script src="javascript file location"> tag to communicate with Javascript
-    ~ A Javascript file containing:
+     A Javascript file containing:
         A function connecting to the host (subscribing) which contains an onConnect: (method to put in here that sends the message when connecting)
         A function containing the destination name of the subscriber which also sends the message received from the HTML file.
 
@@ -55,15 +55,15 @@ Basics being used for MQTT communication between robot and website:
 First of all what is needed to play the bingo game, cards are needed.
 You are able to generate these cards from the website from a pdf file for a set amount of players. 
 If you do not know how to generate these cards i recommend reading the MQTT section again and the comments left in the Java class making these cards.
-You are not able to play the Bingo with the robot unless you have these cards because they contain a very special QR-Code in which contains the numbers of the players' personal card. These are needed later on to verify your win or loss.
+You are not able to play the Bingo with the robot unless you have these cards because they contain a very special QR-Code in which contains the numbers of the players personal card. These are needed later on to verify your win or loss.
 
 When finally having these special cards, you are able to start the game remotely from the website. Again, read the MQTT section if you do not know how to start the game. 
 
 When having started the game with the button on the homepage, the robot shall ask you for confirmation to start the game. 
-To activate the game you just need to say the keyword: 'START!'. We recommend when saying keywords like BINGO! or START! that you should be near enough to the robot since the speechrecognition of the robot is not perfect. 
+To activate the game you just need to say the keyword: START!. We recommend when saying keywords like BINGO! or START! that you should be near enough to the robot since the speechrecognition of the robot is not perfect. 
 
 If the robot confirms that you said START! it assumes all the players are ready and the game is being started.
-The robot will start to call out numbers from 1 to 75 (Like a traditional bingo game). Once a number on your card is called out, you can cross it off with a pencil. When all your numbers are crossed off, shout "Bingo!" very hard and the robot should acknowledge you said the keyword. If the robot did acknowledge it, the robot will ask you to show the QR-Code on your card you generated to the robot. Be informed that the camera of the robot is not with its eyes! It is located right in the middle of its forehead. To learn more about the positions of the microphones and camera of the robot I recommend reading the documentation on the official Softbank Robotics website with the following link:
+The robot will start to call out numbers from 1 to 75 (Like a traditional bingo game). Once a number on your card is called out, you can cross it off with a pencil. When all your numbers are crossed off, shout Bingo! very hard and the robot should acknowledge you said the keyword. If the robot did acknowledge it, the robot will ask you to show the QR-Code on your card you generated to the robot. Be informed that the camera of the robot is not with its eyes! It is located right in the middle of its forehead. To learn more about the positions of the microphones and camera of the robot I recommend reading the documentation on the official Softbank Robotics website with the following link:
     https://developer.softbankrobotics.com/nao6/nao-documentation/nao-developer-guide/technical-overview
 
 The robot compares the values given in the QR-code and the values of the numbers the robot said out loud during the game. 
