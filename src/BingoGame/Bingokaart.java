@@ -5,8 +5,6 @@ import com.itextpdf.text.Font;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.pdf.*;
 import org.eclipse.paho.client.mqttv3.*;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
 import java.awt.*;
 import java.io.*;
@@ -48,8 +46,8 @@ public class Bingokaart {
             @Override
             public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
                 final String[] bingoLetters = {"B", "I", "N", "G", "O"};
-                final String[][] bingoNummers = new String[5][5];
-                final float[] kolomBreedtes = {2f, 2f, 2f, 2f, 2f};
+                final String[][] bingoNumbers = new String[5][5];
+                final float[] colomnWidth = {2f, 2f, 2f, 2f, 2f};
                 final BaseFont bf = BaseFont.createFont(pathFontLemon, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
                 final BaseFont bf2 = BaseFont.createFont(pathFontItim, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
                 final Font font1 = new Font(bf, 25); // for bingo characters
@@ -58,9 +56,9 @@ public class Bingokaart {
                 final Font font4 = new Font(bf, 15); // for bingo numbers
                 final Document document = new Document(PageSize.A5);
                 final PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream("Bingokaart.pdf"));
-                String spelercijfers = "";
+                String playerNumbers = "";
                 ArrayList<PdfPTable> bingoTables = new ArrayList<>();
-                bingoTables.add(new PdfPTable(bingoNummers.length));
+                bingoTables.add(new PdfPTable(bingoNumbers.length));
                 ArrayList<BarcodeQRCode> qrCodes = new ArrayList<>();
                 int index = 0;
                 System.out.println("Bericht ontvangen");
@@ -79,7 +77,7 @@ public class Bingokaart {
 
                         bingoTables.get(index).setWidthPercentage(105);
                         bingoTables.get(index).setSpacingBefore(5f);
-                        bingoTables.get(index).setWidths(kolomBreedtes);
+                        bingoTables.get(index).setWidths(colomnWidth);
 
                         BaseColor ORANGEE = new BaseColor(255,165,0);
 
@@ -98,24 +96,24 @@ public class Bingokaart {
 
                         BaseColor GREENN = new BaseColor(27, 209, 85);
 
-                        randomNummersOpKaart(bingoNummers);
-                        for (int i = 0; i < bingoNummers.length; i++) {
-                            for (int j = 0; j < bingoNummers[i].length; j++) {
+                        randomNummersOpKaart(bingoNumbers);
+                        for (int i = 0; i < bingoNumbers.length; i++) {
+                            for (int j = 0; j < bingoNumbers[i].length; j++) {
 
                                 font4.setColor(BaseColor.WHITE);
-                                PdfPCell a = new PdfPCell(new Paragraph(bingoNummers[i][j], font4));
+                                PdfPCell a = new PdfPCell(new Paragraph(bingoNumbers[i][j], font4));
 
                                 a.setBackgroundColor(GREENN);
                                 a.setFixedHeight(50f);
                                 a.setPaddingLeft(30f);
                                 a.setPaddingTop(20f);
 
-                                spelercijfers = spelercijfers.concat(bingoNummers[i][j] + " ");
+                                playerNumbers = playerNumbers.concat(bingoNumbers[i][j] + " ");
                                 bingoTables.get(index).addCell(a);
                             }
                         }
 
-                        qrCodes.add(new BarcodeQRCode(spelercijfers, 1000, 1000, null));
+                        qrCodes.add(new BarcodeQRCode(playerNumbers, 1000, 1000, null));
                         Image codeQrImage = qrCodes.get(index).getImage();
                         codeQrImage.scaleToFit(180, 180);
                         codeQrImage.setAbsolutePosition(20, 30);
@@ -130,10 +128,10 @@ public class Bingokaart {
                         document.newPage();
 
                         System.out.println("\nBingokaart " + (index + 1) + " is gemaakt.");
-                        System.out.println("Met cijfers: " + spelercijfers);
+                        System.out.println("Met cijfers: " + playerNumbers);
 
                         bingoTables.add(new PdfPTable(5));
-                        spelercijfers = "";
+                        playerNumbers = "";
                         index++;
 
                     } catch (DocumentException | FileNotFoundException e) {
@@ -158,53 +156,53 @@ public class Bingokaart {
         ArrayList<String> cardNumbers = new ArrayList<>();
 
         for (int i = 0; i < array.length; i++) {
-            String nummer = String.valueOf((int) (Math.random() * ((15 - 1) + 1)) + 1);
+            String number = String.valueOf((int) (Math.random() * ((15 - 1) + 1)) + 1);
 
-            while (cardNumbers.contains(nummer)) {
-                nummer = String.valueOf((int) (Math.random() * ((15 - 1) + 1)) + 1);
+            while (cardNumbers.contains(number)) {
+                number = String.valueOf((int) (Math.random() * ((15 - 1) + 1)) + 1);
             }
-            array[i][0] = nummer;
-            cardNumbers.add(nummer);
+            array[i][0] = number;
+            cardNumbers.add(number);
         }
         for (int i = 0; i < array.length; i++) {
-            String nummer = String.valueOf((int) (Math.random() * ((30 - 16) + 1)) + 16);
+            String number = String.valueOf((int) (Math.random() * ((30 - 16) + 1)) + 16);
 
-            while (cardNumbers.contains(nummer)) {
-                nummer = String.valueOf((int) (Math.random() * ((30 - 16) + 1)) + 16);
+            while (cardNumbers.contains(number)) {
+                number = String.valueOf((int) (Math.random() * ((30 - 16) + 1)) + 16);
             }
-            array[i][1] = nummer;
-            cardNumbers.add(nummer);
+            array[i][1] = number;
+            cardNumbers.add(number);
         }
         for (int i = 0; i < array.length; i++) {
-            String nummer = String.valueOf((int) (Math.random() * ((45 - 31) + 1)) + 31);
+            String number = String.valueOf((int) (Math.random() * ((45 - 31) + 1)) + 31);
 
-            while (cardNumbers.contains(nummer)) {
-                nummer = String.valueOf((int) (Math.random() * ((45 - 31) + 1)) + 31);
+            while (cardNumbers.contains(number)) {
+                number = String.valueOf((int) (Math.random() * ((45 - 31) + 1)) + 31);
             }
-            array[i][2] = nummer;
-            cardNumbers.add(nummer);
+            array[i][2] = number;
+            cardNumbers.add(number);
         }
         for (int i = 0; i < array.length; i++) {
-            String nummer = String.valueOf((int) (Math.random() * ((60 - 46) + 1)) + 46);
+            String number = String.valueOf((int) (Math.random() * ((60 - 46) + 1)) + 46);
 
-            while (cardNumbers.contains(nummer)) {
-                nummer = String.valueOf((int) (Math.random() * ((60 - 46) + 1)) + 46);
+            while (cardNumbers.contains(number)) {
+                number = String.valueOf((int) (Math.random() * ((60 - 46) + 1)) + 46);
             }
-            array[i][3] = nummer;
-            cardNumbers.add(nummer);
+            array[i][3] = number;
+            cardNumbers.add(number);
         }
         for (int i = 0; i < array.length; i++) {
-            String nummer = String.valueOf((int) (Math.random() * ((75 - 61) + 1)) + 61);
+            String number = String.valueOf((int) (Math.random() * ((75 - 61) + 1)) + 61);
 
-            while (cardNumbers.contains(nummer)) {
-                nummer = String.valueOf((int) (Math.random() * ((75 - 61) + 1)) + 61);
+            while (cardNumbers.contains(number)) {
+                number = String.valueOf((int) (Math.random() * ((75 - 61) + 1)) + 61);
             }
-            array[i][4] = nummer;
-            cardNumbers.add(nummer);
+            array[i][4] = number;
+            cardNumbers.add(number);
         }
     }
 
-    public boolean checkPlayersCard(String[] robotCijfers, String[] spelerCijfers) {
-        return new HashSet<>(Arrays.asList(robotCijfers)).containsAll(Arrays.asList(spelerCijfers));
+    public boolean checkPlayersCard(String[] robotNumbers, String[] playerNumbers) {
+        return new HashSet<>(Arrays.asList(robotNumbers)).containsAll(Arrays.asList(playerNumbers));
     }
 }
