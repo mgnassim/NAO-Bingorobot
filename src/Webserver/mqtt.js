@@ -1,9 +1,17 @@
 var mqtt;
-const reconnectTimeout = 2000;
 var host = "mqtt.hva-robots.nl";
 var port = 443;
 var username = "bilalma";
 var password = "lo7ooKsNuabwdwvL2exq";
+
+/* MQTTconnect() is used to connect to the Java application. Using MQTT to send messages which are later on used in the
+Java application. For instance: MQTTConnect2() connects to Bingocard. When succesfully connected to Bingocard, onConnect2()
+is used to send to the topic/destinationname the value put in at the website.
+
+MQTTConnect() is triggered in the html when a button is being clicked. When the button is clicked a message is sent to the Main.java
+This triggers the game to be started.
+ */
+
 
 function onConnect() {
     console.log("Connected");
@@ -23,10 +31,8 @@ function MQTTconnect() {
         onSuccess: onConnect,
     };
 
-    mqtt.connect(options); // connect
+    mqtt.connect(options);
 }
-
-var sum = document.getElementById('searchTerm').value;
 
 function onConnect2() {
     console.log("Connected");
@@ -47,5 +53,5 @@ function MQTTconnect2() {
         onSuccess: onConnect2,
     };
 
-    mqtt.connect(options); // connect
+    mqtt.connect(options);
 }
