@@ -5,31 +5,18 @@ import com.itextpdf.text.Font;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.pdf.*;
 import org.eclipse.paho.client.mqttv3.*;
-
-import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 
 public class Bingokaart {
 
     public static String MQTT_HOST = "tcp://mqtt.hva-robots.nl:1883";
-    // Client id, unique name for each client, prefix with your username
-    public static String MQTT_CLIENT_ID = "bilalma_test";
-    // Username from hva-robots.nl
     public static String MQTT_USERNAME = "bilalma";
-    // Password from hva-robots.nl
     public static String MQTT_PASSWORD = "lo7ooKsNuabwdwvL2exq";
-
     static final String pathFontLemon = "BingoFonts\\LemonMilk.otf";
     static final String pathFontItim = "BingoFonts\\Itim-Regular.ttf";
 
-    public void call() throws MqttException, DocumentException, IOException {
-        Bingokaart.main(null);
-    }
-
-    public static void main(String[] args) throws DocumentException, IOException, MqttException {
+    public static void main(String[] args) throws MqttException {
         MqttClient client = new MqttClient(MQTT_HOST, MqttClient.generateClientId());
         MqttConnectOptions connectOptions = new MqttConnectOptions();
         connectOptions.setUserName(MQTT_USERNAME);
@@ -56,16 +43,12 @@ public class Bingokaart {
                 final Font font4 = new Font(bf, 15); // for bingo numbers
                 final Document document = new Document(PageSize.A5);
                 final PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream("Bingokaart.pdf"));
+                final BaseColor GREEN = new BaseColor(27, 209, 85);
                 String playerNumbers = "";
                 ArrayList<PdfPTable> bingoTables = new ArrayList<>();
                 bingoTables.add(new PdfPTable(bingoNumbers.length));
                 ArrayList<BarcodeQRCode> qrCodes = new ArrayList<>();
                 int index = 0;
-                System.out.println("Bericht ontvangen");
-                System.out.print("Topic: ");
-                System.out.println(topic);
-                System.out.print("Bericht: ");
-                System.out.println(mqttMessage.toString());
 
                 for (int cards = 0; cards < Integer.parseInt(mqttMessage.toString()); cards++) {
                     try {
@@ -77,62 +60,59 @@ public class Bingokaart {
 
                         bingoTables.get(index).setWidthPercentage(105);
                         bingoTables.get(index).setSpacingBefore(5f);
-                        bingoTables.get(index).setWidths(colomnWidth);
+                        bingoTables.get(index).setWidths(colomnWidth); // lay-out of the pdfTables
 
-                        BaseColor ORANGEE = new BaseColor(255,165,0);
+                        for (int i = 0; i < bingoLetters.length; i++) {
+                            PdfPCell letter = new PdfPCell(new Paragraph(bingoLetters[i], font1)); // printing the letters of B.I.N.G.O
 
-                        for (int i = 0; i < 5; i++) {
-                            PdfPCell letter = new PdfPCell(new Paragraph(bingoLetters[i], font1));
+                            letter.setBackgroundColor(BaseColor.YELLOW); // for the background color of the numbers.
+
                             letter.setPadding(10f);
-                            letter.setBackgroundColor(BaseColor.YELLOW);
                             letter.setBorderWidth(1f);
                             letter.setFixedHeight(50f);
-                            letter.setPaddingLeft(25f);
+                            letter.setPaddingLeft(25f); // for the lay-out.
                             letter.setPaddingTop(10f);
+
                             if (i == 1)
-                                letter.setPaddingLeft(33f);
-                            bingoTables.get(index).addCell(letter);
+                                letter.setPaddingLeft(33f); // the letter I had less width so needed to put it more in the middle.
+
+                            bingoTables.get(index).addCell(letter); // adds the cell to the document/pdf.
                         }
 
-                        BaseColor GREENN = new BaseColor(27, 209, 85);
-
-                        randomNummersOpKaart(bingoNumbers);
+                        randomNumbersOnBingoCard(bingoNumbers); // random numbers for the bingocard
                         for (int i = 0; i < bingoNumbers.length; i++) {
                             for (int j = 0; j < bingoNumbers[i].length; j++) {
 
                                 font4.setColor(BaseColor.WHITE);
                                 PdfPCell a = new PdfPCell(new Paragraph(bingoNumbers[i][j], font4));
 
-                                a.setBackgroundColor(GREENN);
+                                a.setBackgroundColor(GREEN);
                                 a.setFixedHeight(50f);
-                                a.setPaddingLeft(30f);
+                                a.setPaddingLeft(30f); // lay out of numbers
                                 a.setPaddingTop(20f);
 
-                                playerNumbers = playerNumbers.concat(bingoNumbers[i][j] + " ");
-                                bingoTables.get(index).addCell(a);
+                                playerNumbers = playerNumbers.concat(bingoNumbers[i][j] + " "); // Data to put on qr code
+                                bingoTables.get(index).addCell(a); // Adding numbers to document per cell.
                             }
                         }
 
-                        qrCodes.add(new BarcodeQRCode(playerNumbers, 1000, 1000, null));
+                        qrCodes.add(new BarcodeQRCode(playerNumbers, 1000, 1000, null)); // make qr code and add to arraylist
                         Image codeQrImage = qrCodes.get(index).getImage();
-                        codeQrImage.scaleToFit(180, 180);
+                        codeQrImage.scaleToFit(180, 180); // lay out and size of qr code.
                         codeQrImage.setAbsolutePosition(20, 30);
 
                         Image img = Image.getInstance("naoQI.jpg");
-                        img.scaleToFit(150, 150);
+                        img.scaleToFit(150, 150); // lay out of nao picture
                         img.setAbsolutePosition(230f, 40f);
 
                         document.add(bingoTables.get(index));
                         document.add(img);
-                        document.add(codeQrImage);
-                        document.newPage();
+                        document.add(codeQrImage); // adding everything to document.
+                        document.newPage(); // making a new page for second.. third.. etc.. document/bingocard.
 
-                        System.out.println("\nBingokaart " + (index + 1) + " is gemaakt.");
-                        System.out.println("Met cijfers: " + playerNumbers);
-
-                        bingoTables.add(new PdfPTable(5));
-                        playerNumbers = "";
-                        index++;
+                        bingoTables.add(new PdfPTable(bingoNumbers.length)); // making tables for next bingocard
+                        playerNumbers = ""; // resetting contents of qr code for next card.
+                        index++; // for the next card.
 
                     } catch (DocumentException | FileNotFoundException e) {
                         e.printStackTrace();
@@ -140,7 +120,6 @@ public class Bingokaart {
                 }
                 document.close();
                 writer.close();
-                Desktop.getDesktop().open(new File("Bingokaart.pdf"));
             }
 
             @Override
@@ -148,12 +127,15 @@ public class Bingokaart {
 
             }
         });
-        client.subscribe("bilalma/robot/bingo2");
+        client.subscribe("bilalma/robot/bingo2"); // for MQTT connection
     }
 
-    private static void randomNummersOpKaart(String[][] array) {
+    private static void randomNumbersOnBingoCard(String[][] array) {
 
         ArrayList<String> cardNumbers = new ArrayList<>();
+
+        // cardNumbers is being used to check if a number generated is unique or not.
+        // within each for loop a maximum and minimum number is generated for each vertical column of the bingocard.
 
         for (int i = 0; i < array.length; i++) {
             String number = String.valueOf((int) (Math.random() * ((15 - 1) + 1)) + 1);
@@ -200,9 +182,5 @@ public class Bingokaart {
             array[i][4] = number;
             cardNumbers.add(number);
         }
-    }
-
-    public boolean checkPlayersCard(String[] robotNumbers, String[] playerNumbers) {
-        return new HashSet<>(Arrays.asList(robotNumbers)).containsAll(Arrays.asList(playerNumbers));
     }
 }
