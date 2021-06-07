@@ -80,18 +80,18 @@ public class Bingokaart {
                         }
 
                         randomNumbersOnBingoCard(bingoNumbers); // random numbers for the bingocard
-                        for (int i = 0; i < bingoNumbers.length; i++) {
-                            for (int j = 0; j < bingoNumbers[i].length; j++) {
+                        for (String[] bingoNumber : bingoNumbers) {
+                            for (String s : bingoNumber) {
 
                                 font4.setColor(BaseColor.WHITE);
-                                PdfPCell a = new PdfPCell(new Paragraph(bingoNumbers[i][j], font4));
+                                PdfPCell a = new PdfPCell(new Paragraph(s, font4));
 
                                 a.setBackgroundColor(GREEN);
                                 a.setFixedHeight(50f);
                                 a.setPaddingLeft(30f); // lay out of numbers
                                 a.setPaddingTop(20f);
 
-                                playerNumbers = playerNumbers.concat(bingoNumbers[i][j] + " "); // Data to put on qr code
+                                playerNumbers = playerNumbers.concat(s + " "); // Data to put on qr code
                                 bingoTables.get(index).addCell(a); // Adding numbers to document per cell.
                             }
                         }

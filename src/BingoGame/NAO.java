@@ -9,8 +9,8 @@ import java.util.*;
 
 public class NAO {
 
-    private List<String> words = new ArrayList<>(); // vocabulary of the robot.
-    private ArrayList<String> spokenNumbers = new ArrayList<>(); // numbers said during the bingo.
+    private final List<String> words = new ArrayList<>(); // vocabulary of the robot.
+    private final ArrayList<String> spokenNumbers = new ArrayList<>(); // numbers said during the bingo.
     private String value; // The numbers of the bingo in a string.
     private String[] numbers; // The numbers of the bingo in a array.
     private Application application; // To connect with the robot
@@ -38,14 +38,14 @@ public class NAO {
     }
 
     public void animation(String path) throws Exception {
-        // Create an ALAniamationPlayer object and link it to the session
+        // Create an ALAnimationPlayer object and link it to the session
         ALAnimationPlayer alAnimationPlayer = new ALAnimationPlayer(this.application.session());
         // Make the robot do somethings
         alAnimationPlayer.run(path);
     }
 
     public void animatedSpeech(String text) throws Exception {
-        // Create an ALAniamationSpeech object and link it to the session
+        // Create an ALAnimationSpeech object and link it to the session
         ALAnimatedSpeech alAnimatedSpeech = new ALAnimatedSpeech(this.application.session());
         // Make the robot do something
         alAnimatedSpeech.say(text);
@@ -57,17 +57,19 @@ public class NAO {
         ALSpeechRecognition speechrec = new ALSpeechRecognition(this.application.session());
         ALMemory memory = new ALMemory(this.application.session());
         try {
-            speechrec.unsubscribe("Test_asr"); // safety meausure to unsubscribe to the speechrec on the beginning
-        } catch(Exception e) {}
+            speechrec.unsubscribe("Test_asr"); // safety measure to unsubscribe to the speechrec on the beginning
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
 
-        speechrec.setVocabulary(words, true); /* sets the Vocabulary of the robot to the words given aboven in the list 'words'.
+        speechrec.setVocabulary(words, true); /* sets the Vocabulary of the robot to the words given above in the list 'words'.
         It only recognizes the word 'Start' at the moment.
-        The reason enabledWordSpotting is true, is that it indicats everything except the word Start as garbage results.*/
+        The reason enabledWordSpotting is true, is that it indicates everything except the word Start as garbage results.*/
 
         memory.subscribeToEvent("WordRecognized", new EventCallback() { // Subscribes to the event WordRecognized.
             // Wordrecognized is raised when one of the words has been recognized from setVocabulary.
             @Override
-            public void onEvent(Object o) throws InterruptedException, CallError {
+            public void onEvent(Object o) {
                 List<Object> data = (List<Object>) o; // Casting the data of 'o' to a list of <Object>s.
                 String value = (String) data.get(0); // Casting the first index of 'data' to a String to check later on.
                 float confidence = (float) data.get(1); // Casting the second index of 'data' to a float to check later on the trustworthiness.
@@ -101,8 +103,10 @@ public class NAO {
         ALMemory memory = new ALMemory(this.application.session());
         speechrec.setLanguage("English"); // sets language to English
         try {
-            speechrec.unsubscribe("Test_asr"); // safety meausure to unsubscribe to the speechrec on the beginning
-        } catch (Exception e) {}
+            speechrec.unsubscribe("Test_asr"); // safety measure to unsubscribe to the speechrec on the beginning
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         speechrec.setVocabulary(words, true); // same as configurationListenToStart();
 
@@ -143,17 +147,17 @@ public class NAO {
         tts.setVolume(1.0f);
         tts.setLanguage("Dutch");
 
-        int randomNumber = (int) (Math.random() * 45) + 1; // generates a random number between 1 and 45.
+        int randomNumber = (int) (Math.random() * 75) + 1; // generates a random number between 1 and 75.
 
         if (spokenNumbers.contains(String.valueOf(randomNumber))) { // checks whether the new number made already exists in the list spokenNumbers.
             while (spokenNumbers.contains(String.valueOf(randomNumber))) // generates a new number the whole time
-                randomNumber = (int) (Math.random() * 45) + 1; // and stops generating when a new unique number is made that didnt exist before.
+                randomNumber = (int) (Math.random() * 75) + 1; // and stops generating when a new unique number is made that didnt exist before.
         }
         spokenNumbers.add(String.valueOf(randomNumber)); // adds the number to the list
-        
+
         try {
             // says the generated number with a little animation
-            animatedSpeech("Het volgende nummer is ^start(animations/Stand/Gestures/shortrange)" + String.valueOf(randomNumber) + "^wait(animations/Stand/Gestures/shortrange)");
+            animatedSpeech("Het volgende nummer is ^start(animations/Stand/Gestures/shortrange)" + randomNumber + "^wait(animations/Stand/Gestures/shortrange)");
             Thread.sleep(1000); // pauses a little bit after saying the number.
         } catch (Exception e) {
             e.printStackTrace();
@@ -165,7 +169,7 @@ public class NAO {
         ALBarcodeReader scanner = new ALBarcodeReader(this.application.session());
         memory.subscribeToEvent("BarcodeReader/BarcodeDetected", new EventCallback() { // subscribes to the event of reading a qrCode/Barcode.
             @Override
-            public void onEvent(Object o) throws InterruptedException, CallError {
+            public void onEvent(Object o) {
                 List<Object> data = (List<Object>) o; // Casting the data received of the event to a list of <Object>s.
                 ArrayList<Object> qrCode = (ArrayList<Object>) data.get(0); // Casting the first index of 'data'.
                 value = (String) qrCode.get(0); // Casting the numbers to a String.
@@ -174,11 +178,13 @@ public class NAO {
         });
         try {
             scanner.unsubscribe("QR-Code"); // to Stop writing qr code infortmation to 'QR-code' of the event.
-        } catch (Exception exception) {}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         scanner.subscribe("QR-Code"); // Writing qr code information to 'QR-Code'.
     }
 
-    public boolean scan() throws Exception {
+    public boolean scan(){
         ArrayList<String> cardNumbers = new ArrayList<>(Arrays.asList(numbers)); // converting the numbers array to an arraylist.
         return new HashSet<>(spokenNumbers).containsAll(cardNumbers); // checking the spokenNumbers with the numbers of the player.
     }
