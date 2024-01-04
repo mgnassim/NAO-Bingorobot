@@ -9,7 +9,6 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class Bingokaart {
-
     public static String MQTT_HOST = "tcp://mqtt.hva-robots.nl:1883";
     public static String MQTT_USERNAME = "bilalma";
     public static String MQTT_PASSWORD = "lo7ooKsNuabwdwvL2exq";
