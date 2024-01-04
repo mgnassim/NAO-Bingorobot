@@ -3,7 +3,6 @@ package BingoGame;
 import org.eclipse.paho.client.mqttv3.*;
 
 public class Main {
-
     // Host of the MQTT broker
     public static String MQTT_HOST = "tcp://mqtt.hva-robots.nl:1883";
     // Username from hva-robots.nl
