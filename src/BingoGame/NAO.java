@@ -1,5 +1,4 @@
 package BingoGame;
-
 import com.aldebaran.qi.Application;
 import com.aldebaran.qi.CallError;
 import com.aldebaran.qi.helper.EventCallback;
